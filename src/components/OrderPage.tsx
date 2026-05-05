@@ -106,7 +106,7 @@ export default function OrderPage() {
 
       // WhatsApp Redirect
       const message = `Halo Nokz Studio! Saya ingin memesan jasa ${type.toUpperCase()}%0A%0A*Nama:* ${formData.name}%0A*Tanggal:* ${formData.date}%0A*Brief:* ${formData.brief}${imageUrl ? `%0A*Referensi:* ${imageUrl}` : ''}`;
-      const whatsappUrl = `https://wa.me/6282243644023?text=${message}`;
+      const whatsappUrl = `https://wa.me/6287853895560?text=${message}`;
 
       await Swal.fire({
         title: 'Sukses!',

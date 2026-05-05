@@ -992,32 +992,7 @@ export default function Admin({ onBack }: { onBack: () => void }) {
                     </div>
                   ))}
                   
-                  {/* Age Distribution Insight Card */}
-                  <div className="glass bg-[#1c232d]/40 backdrop-blur-xl p-4 sm:p-7 rounded-[1.5rem] sm:rounded-[2.5rem] border border-white/5 col-span-3 sm:col-span-2 lg:col-span-1 flex flex-col gap-4 sm:gap-6">
-                    <p className="text-white/20 text-[8px] sm:text-[10px] font-black uppercase tracking-[0.4em] ml-2">Presentasi Usia</p>
-                    <div className="space-y-4">
-                      {ageData && ageData.length > 0 ? ageData.slice(0, 3).map((age) => (
-                        <div key={age.name} className="space-y-2 text-left px-2">
-                          <div className="flex justify-between text-[10px] font-black tracking-widest uppercase">
-                            <span className="text-white/40">{age.name} YRS</span>
-                            <span className="text-primary">{age.value}%</span>
-                          </div>
-                          <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                            <motion.div 
-                              initial={{ width: 0 }}
-                              whileInView={{ width: `${age.value}%` }}
-                              transition={{ duration: 1.5, ease: "easeOut" }}
-                              className="h-full bg-primary"
-                              style={{ backgroundColor: age.color }}
-                            />
-                          </div>
-                        </div>
-                      )) : (
-                        <p className="text-[10px] text-white/30 italic py-4 text-center">Waiting for precision data...</p>
-                      )}
-                    </div>
                   </div>
-                </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                   <div className="lg:col-span-2 space-y-8">
@@ -1492,7 +1467,7 @@ export default function Admin({ onBack }: { onBack: () => void }) {
                                     </div>
                                   </div>
                                 </div>
-                                <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="flex flex-col gap-2">
                                   <button onClick={() => handleOrderEditClick(o)} className="p-2 transition-colors text-white/20 hover:text-blue-400 bg-white/5 rounded-lg"><Edit3 size={14} /></button>
                                   <button onClick={() => handleDelete(o.id, 'orders')} className="p-2 transition-colors text-white/20 hover:text-red-400 bg-white/5 rounded-lg"><Trash2 size={14} /></button>
                                 </div>
@@ -1556,7 +1531,7 @@ export default function Admin({ onBack }: { onBack: () => void }) {
                                     </div>
                                   </div>
                                 </div>
-                                <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="flex flex-col gap-2">
                                   <button onClick={() => handleOrderEditClick(o)} className="p-2 transition-colors text-white/20 hover:text-blue-400 bg-white/5 rounded-lg"><Edit3 size={14} /></button>
                                   <button onClick={() => handleDelete(o.id, 'orders')} className="p-2 transition-colors text-white/20 hover:text-red-400 bg-white/5 rounded-lg"><Trash2 size={14} /></button>
                                 </div>
@@ -1588,11 +1563,23 @@ export default function Admin({ onBack }: { onBack: () => void }) {
                                   onClick={() => setSelectedOrder(o)}
                                   className="flex-1 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all"
                                 >
-                                  Expand
+                                  Details
                                 </button>
-                                <div className="flex-[1.5] py-3 bg-primary/5 border border-primary/20 rounded-xl flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-primary">
-                                  Verified Process
-                                </div>
+                                <button
+                                  onClick={async () => {
+                                    const nextStatusMap: Record<string, Order['status']> = {
+                                      'Belum Dimulai': 'Dalam Antrian',
+                                      'Dalam Antrian': 'Prosess',
+                                      'Prosess': 'Selesai',
+                                      'Selesai': 'Belum Dimulai'
+                                    };
+                                    const newStatus = nextStatusMap[o.status] || 'Belum Dimulai';
+                                    await updateOrderStatus(o.id, newStatus);
+                                  }}
+                                  className="flex-[1.5] py-3 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-xl flex items-center justify-center text-[9px] font-black uppercase tracking-widest text-primary transition-all active:scale-95"
+                                >
+                                  Update Status
+                                </button>
                               </div>
                             </motion.div>
                           ))}

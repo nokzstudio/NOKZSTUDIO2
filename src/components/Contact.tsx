@@ -72,28 +72,22 @@ export default function Contact() {
             href="https://wa.me/6287853895560" 
             target="_blank" 
             rel="noreferrer"
-            className="flex items-center gap-4 bg-[#25D366] p-5 rounded-2xl active:scale-95 transition-transform shadow-xl shadow-[#25D366]/20 group"
+            className="flex items-center gap-4 bg-[#25D366] p-4 rounded-full active:scale-95 transition-transform shadow-xl shadow-[#25D366]/20 group"
           >
-            <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
               <MessageCircle size={24} />
             </div>
-            <div>
-              <p className="text-[8px] text-white/60 uppercase font-black tracking-widest">WhatsApp</p>
-              <p className="text-base font-black text-white">+62 878-5389-5560</p>
-            </div>
+            <p className="text-xl font-black text-white tracking-tight">WhatsApp</p>
           </a>
           
           <a 
             href="mailto:nokzdesign.inc@gmail.com"
-            className="flex items-center gap-4 bg-primary p-5 rounded-2xl active:scale-95 transition-transform shadow-xl shadow-primary/20 group"
+            className="flex items-center gap-4 bg-primary p-4 rounded-full active:scale-95 transition-transform shadow-xl shadow-primary/20 group"
           >
-            <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
               <Mail size={24} />
             </div>
-            <div className="overflow-hidden">
-              <p className="text-[8px] text-white/60 uppercase font-black tracking-widest">Email</p>
-              <p className="text-base font-black text-white truncate">nokzdesign.inc@gmail.com</p>
-            </div>
+            <p className="text-xl font-black text-white tracking-tight">Email</p>
           </a>
         </div>
         

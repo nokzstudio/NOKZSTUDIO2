@@ -30,17 +30,17 @@ export default function About() {
   });
 
   return (
-    <section id="about" className="py-6 bg-base-content/[0.02] rounded-[3rem] overflow-hidden" ref={ref}>
+    <section id="about" className="py-6 bg-base-content/[0.02] rounded-[3rem] overflow-hidden scroll-mt-24" ref={ref}>
       <div className="max-w-xl mx-auto px-6">
-        <div className="text-center mb-6">
-          <motion.h4 
-            initial={{ opacity: 0, y: 10 }}
+        <div className="text-center mb-10">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
-            className="text-[10px] font-black uppercase tracking-[0.6em] text-base-content mb-2"
+            className="font-display font-black text-4xl md:text-5xl tracking-tighter mb-4"
           >
-            Order Here
-          </motion.h4>
-          <div className="h-px w-8 bg-primary/30 mx-auto"></div>
+            MAU BIKIN <span className="text-base-content/20 uppercase">Desain Apa bos?</span>
+          </motion.h2>
+          <div className="h-px w-12 bg-primary/30 mx-auto"></div>
         </div>
 
         <div className="grid grid-cols-3 gap-3 mb-8">
