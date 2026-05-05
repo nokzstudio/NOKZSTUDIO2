@@ -30,6 +30,7 @@
         "customDate": { "type": "string" },
         "deadline": { "type": "string" },
         "referenceImage": { "type": "string" },
+        "deviceId": { "type": "string", "description": "Unique ID for the device to limit orders" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["clientName", "whatsapp", "service", "status", "paymentStatus", "createdAt"]

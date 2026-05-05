@@ -73,6 +73,15 @@ export default function OrderPage() {
     audio.play().catch(e => console.error('Audio play failed:', e));
   };
 
+  const getDeviceId = () => {
+    let id = localStorage.getItem('nokz_device_id');
+    if (!id) {
+      id = 'device_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+      localStorage.setItem('nokz_device_id', id);
+    }
+    return id;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.brief) {
@@ -82,6 +91,40 @@ export default function OrderPage() {
 
     setLoading(true);
     try {
+      const deviceId = getDeviceId();
+      
+      // Check order limit for today
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      
+      const q = query(
+        collection(db, 'orders'),
+        where('deviceId', '==', deviceId)
+      );
+      
+      const querySnapshot = await getDocs(q);
+      const todayOrders = querySnapshot.docs.filter(doc => {
+        const data = doc.data();
+        if (!data.createdAt) return false;
+        // Convert Firestore Timestamp to Date
+        const createdAt = data.createdAt.toDate();
+        return createdAt >= todayStart;
+      });
+
+      if (todayOrders.length >= 2) {
+        Swal.fire({
+          title: 'Batas Pesanan Tercapai',
+          text: 'Maaf bos, satu perangkat hanya bisa memesan maksimal 2 kali dalam sehari untuk menjaga kualitas layanan kami. Silakan coba lagi besok!',
+          icon: 'warning',
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdrop: `rgba(0,0,0,0.4) blur(10px)`,
+          color: '#fff',
+          confirmButtonColor: '#ff2d2d'
+        });
+        setLoading(false);
+        return;
+      }
+
       let imageUrl = '';
       if (referenceImage) {
         const imageRef = storageRef(storage, `orders/${Date.now()}_${referenceImage.name}`);
@@ -95,6 +138,7 @@ export default function OrderPage() {
         brief: formData.brief,
         date: formData.date,
         referenceImage: imageUrl,
+        deviceId: deviceId, // Track the device
         status: 'Belum Dimulai',
         paymentStatus: 'Belum Bayar',
         isAccepted: false,
