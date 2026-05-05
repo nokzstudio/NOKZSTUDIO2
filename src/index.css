@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+  
+  --color-primary: #8B5CF6; /* Violet 500 */
+  --color-secondary: #06B6D4; /* Cyan 500 */
+  --color-dark: #0A0A0B;
+  --color-surface: var(--surface);
+  --color-base-content: var(--base-content);
+
+  --animate-gradient: gradient 8s ease infinite;
+
+  @keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50% ; }
+  }
+}
+
+:root {
+  --surface: #ffffff;
+  --base-content: #0a0a0b;
+}
+
+.dark {
+  --surface: #050505;
+  --base-content: #ffffff;
+}
+
+@layer base {
+  body {
+    @apply bg-surface text-base-content font-sans antialiased selection:bg-primary/30 selection:text-white transition-colors duration-300;
+  }
+}
+
+@layer utilities {
+  .no-cursor {
+    @media (min-width: 768px) {
+      cursor: none;
+    }
+  }
+}
+
+.custom-cursor {
+  @apply fixed top-0 left-0 w-8 h-8 pointer-events-none z-[9999] rounded-full mix-blend-difference;
+  transition: transform 0.15s ease-out;
+}
+
+.glass {
+  @apply bg-base-content/5 backdrop-blur-md border border-base-content/10;
+}
+
+.glass-swal {
+  @apply !bg-surface !backdrop-blur-xl !border !border-base-content/10 !rounded-[2rem] !shadow-2xl;
+}
+
+.swal2-popup.glass-swal {
+  background: var(--surface) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid color-mix(in srgb, var(--base-content), transparent 90%) !important;
+  color: var(--base-content) !important;
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient;
+  background-size: 300% 100%;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-surface;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-base-content/10 rounded-full hover:bg-primary/50 transition-colors;
+}
+
+.cyber-grid {
+  background-color: #050505;
+  background-image: 
+    linear-gradient(rgba(139, 92, 246, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px),
+    linear-gradient(rgba(139, 92, 246, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.05) 1px, transparent 1px);
+  background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+  background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+}
+
+.cyber-glow {
+  background: radial-gradient(circle at bottom, rgba(6, 182, 212, 0.2) 0%, transparent 60%);
+}
+

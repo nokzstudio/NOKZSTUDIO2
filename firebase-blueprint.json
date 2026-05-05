@@ -1,0 +1,72 @@
+{
+  "entities": {
+    "project": {
+      "title": "Portfolio Project",
+      "description": "A design project showcase entry",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Project title" },
+        "category": { "type": "string", "description": "Project category (Logo, Branding, etc)" },
+        "image": { "type": "string", "description": "URL of the project image" },
+        "description": { "type": "string", "description": "Detailed project description" },
+        "tools": { "type": "string", "description": "Comma-separated tools used" },
+        "views": { "type": "integer", "description": "Number of times the project has been viewed" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["title", "category", "image", "description", "createdAt"]
+    },
+    "order": {
+      "title": "Order",
+      "description": "A design service order",
+      "type": "object",
+      "properties": {
+        "clientName": { "type": "string" },
+        "whatsapp": { "type": "string" },
+        "service": { "type": "string" },
+        "status": { "type": "string", "enum": ["Belum Dimulai", "Dalam Antrian", "Selesai", "Dibatalkan"] },
+        "paymentStatus": { "type": "string", "enum": ["Belum Bayar", "DP", "Lunas"] },
+        "amount": { "type": "number" },
+        "dpAmount": { "type": "number" },
+        "customDate": { "type": "string" },
+        "deadline": { "type": "string" },
+        "referenceImage": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["clientName", "whatsapp", "service", "status", "paymentStatus", "createdAt"]
+    },
+    "analytics": {
+      "title": "Monthly Analytics",
+      "description": "Aggregated website metrics for a specific month",
+      "type": "object",
+      "properties": {
+        "visitors": { "type": "integer" },
+        "orderClicks": { "type": "integer" },
+        "ageGroups": {
+          "type": "object",
+          "properties": {
+            "13-17": { "type": "integer" },
+            "18-24": { "type": "integer" },
+            "25-34": { "type": "integer" },
+            "35-44": { "type": "integer" },
+            "45+": { "type": "integer" }
+          }
+        },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/projects/{projectId}": {
+      "schema": "project",
+      "description": "Collection of all portfolio projects"
+    },
+    "/orders/{orderId}": {
+      "schema": "order",
+      "description": "Collection of all service orders"
+    },
+    "/analytics/{monthId}": {
+      "schema": "analytics",
+      "description": "Monthly performance metrics"
+    }
+  }
+}
