@@ -16,7 +16,8 @@ import {
   getDocs,
   serverTimestamp,
   Timestamp,
-  getDoc
+  getDoc,
+  limit
 } from 'firebase/firestore';
 import { glassSwal } from '../lib/swal';
 import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
@@ -223,7 +224,8 @@ export default function Admin({ onBack }: { onBack: () => void }) {
 
     // Small timeout to ensure the token state is reflected in rules if just logged in
     const timeoutId = setTimeout(() => {
-      const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
+      // Limit to 100 recent projects
+      const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'), limit(100));
       unsubscribeProjects = onSnapshot(q, (snapshot) => {
         const docs = snapshot.docs.map(doc => ({
           id: doc.id,
@@ -234,7 +236,8 @@ export default function Admin({ onBack }: { onBack: () => void }) {
         handleFirestoreError(error, OperationType.LIST, 'projects');
       });
 
-      const ordersQ = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
+      // Limit to 100 recent orders
+      const ordersQ = query(collection(db, 'orders'), orderBy('createdAt', 'desc'), limit(100));
       unsubscribeOrders = onSnapshot(ordersQ, (snapshot) => {
         const docs = snapshot.docs.map(doc => ({
           id: doc.id,
@@ -248,21 +251,24 @@ export default function Admin({ onBack }: { onBack: () => void }) {
       const monthId = getMonthId(0);
       const prevMonthId = getMonthId(1);
 
-      unsubscribeAnalytics = onSnapshot(doc(db, 'analytics', monthId), (doc) => {
-        if (doc.exists()) setCurrentAnalytics(doc.data());
-      }, (error) => {
-        handleFirestoreError(error, OperationType.GET, `analytics/${monthId}`);
-      });
+      // Use getDocs for analytics and banners to save quota since they don't change constantly
+      const fetchStaticData = async () => {
+        try {
+          const [currDoc, prevDoc, bannerSnap] = await Promise.all([
+            getDoc(doc(db, 'analytics', monthId)),
+            getDoc(doc(db, 'analytics', prevMonthId)),
+            getDocs(query(collection(db, 'banners'), limit(10)))
+          ]);
+          
+          if (currDoc.exists()) setCurrentAnalytics(currDoc.data());
+          if (prevDoc.exists()) setLastAnalytics(prevDoc.data());
+          setBanners(bannerSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Banner[]);
+        } catch (error) {
+          console.error("Error fetching static admin data:", error);
+        }
+      };
 
-      unsubscribePrevAnalytics = onSnapshot(doc(db, 'analytics', prevMonthId), (doc) => {
-        if (doc.exists()) setLastAnalytics(doc.data());
-      }, (error) => {
-        handleFirestoreError(error, OperationType.GET, `analytics/${prevMonthId}`);
-      });
-
-      onSnapshot(collection(db, 'banners'), (snapshot) => {
-        setBanners(snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as Banner[]);
-      });
+      fetchStaticData();
     }, 500);
 
     return () => {

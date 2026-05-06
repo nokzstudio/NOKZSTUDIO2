@@ -16,6 +16,7 @@ import LoadingScreen from './components/LoadingScreen';
 import Admin from './components/Admin';
 import Login from './components/Login';
 import OrderPage from './components/OrderPage';
+import ErrorBoundary from './components/ErrorBoundary';
 import { auth } from './lib/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { trackVisit } from './services/analyticsService';
@@ -150,10 +151,12 @@ function AppContent() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <div className="relative min-h-screen selection:bg-primary/30">
-        <AppContent />
-      </div>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <div className="relative min-h-screen selection:bg-primary/30">
+          <AppContent />
+        </div>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }

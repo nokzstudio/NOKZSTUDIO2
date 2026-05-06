@@ -4,7 +4,7 @@ import { useInView } from 'react-intersection-observer';
 import { ExternalLink, Search, X, Palette, Eye } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { db } from '../lib/firebase';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, increment } from 'firebase/firestore';
+import { collection, query, orderBy, getDocs, doc, updateDoc, increment, limit } from 'firebase/firestore';
 import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
 
 const mockProjects = [
@@ -25,14 +25,20 @@ export default function Portfolio() {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
 
   useEffect(() => {
-    const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setProjects(data.length > 0 ? data : mockProjects);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'projects');
-    });
-    return () => unsubscribe();
+    const fetchProjects = async () => {
+      try {
+        // Limit to latest 60 projects to save quota
+        const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'), limit(60));
+        const snapshot = await getDocs(q);
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setProjects(data.length > 0 ? data : mockProjects);
+      } catch (error) {
+        handleFirestoreError(error, OperationType.LIST, 'projects');
+        setProjects(mockProjects);
+      }
+    };
+    
+    fetchProjects();
   }, []);
 
   const filteredProjects = projects.filter(p => filter === 'All' || p.category === filter);

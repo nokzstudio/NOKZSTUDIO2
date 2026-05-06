@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Send, Upload, Calendar, User, FileText, ImageIcon } from 'lucide-react';
 import { db, auth, storage } from '../lib/firebase';
-import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, where, getDocs, limit } from 'firebase/firestore';
 import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import gsap from 'gsap';
@@ -99,19 +99,14 @@ export default function OrderPage() {
       
       const q = query(
         collection(db, 'orders'),
-        where('deviceId', '==', deviceId)
+        where('deviceId', '==', deviceId),
+        where('createdAt', '>=', todayStart),
+        limit(3)
       );
       
       const querySnapshot = await getDocs(q);
-      const todayOrders = querySnapshot.docs.filter(doc => {
-        const data = doc.data();
-        if (!data.createdAt) return false;
-        // Convert Firestore Timestamp to Date
-        const createdAt = data.createdAt.toDate();
-        return createdAt >= todayStart;
-      });
-
-      if (todayOrders.length >= 2) {
+      
+      if (querySnapshot.size >= 2) {
         Swal.fire({
           title: 'Batas Pesanan Tercapai',
           text: 'Maaf bos, satu perangkat hanya bisa memesan maksimal 2 kali dalam sehari untuk menjaga kualitas layanan kami. Silakan coba lagi besok!',
