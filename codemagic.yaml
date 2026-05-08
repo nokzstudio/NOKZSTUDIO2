@@ -1,11 +1,6 @@
 workflows:
   android-build:
     name: Android Build
-    max_build_duration: 60
-
-    environment:
-      vars:
-        PACKAGE_NAME: "com.nokzstudio.app"
 
     scripts:
       - name: Install dependencies
@@ -21,10 +16,10 @@ workflows:
           npx cap sync android
 
       - name: Build APK
-  script: |
-    cd android
-    chmod +x gradlew
-    ./gradlew assembleDebug
+        script: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
 
     artifacts:
       - android/app/build/outputs/**/*.apk
