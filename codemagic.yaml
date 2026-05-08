@@ -21,9 +21,10 @@ workflows:
           npx cap sync android
 
       - name: Build APK
-        script: |
-          cd android
-          ./gradlew assembleDebug
+  script: |
+    cd android
+    chmod +x gradlew
+    ./gradlew assembleDebug
 
     artifacts:
       - android/app/build/outputs/**/*.apk
