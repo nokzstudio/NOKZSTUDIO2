@@ -2156,3 +2156,4 @@ export default function Admin({ onBack }: { onBack: () => void }) {
       </AnimatePresence>
     </div>
   );
+}
