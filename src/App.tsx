@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useState, useEffect } from 'react';
 import OneSignal from 'react-onesignal';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
@@ -142,31 +142,14 @@ function AppContent() {
 export default function App() {
 
   useEffect(() => {
-
-  async function initOneSignal() {
-
-    await OneSignal.init({
-      appId: 'f82bd795-4f0e-4adc-93d9-e8067943a8e8',
-      allowLocalhostAsSecureOrigin: true,
+    OneSignal.init({
+      appId: "f82bd795-4f0e-4adc-93d9-e8067943a8e8",
     });
-
-    console.log('OneSignal Loaded');
-
-    OneSignal.Slidedown.promptPush();
-
-  }
-
-  initOneSignal();
-
-}, []);
+  }, []);
 
   return (
-    <ErrorBoundary>
-      <BrowserRouter>
-        <div className="relative min-h-screen selection:bg-primary/30">
-          <AppContent />
-        </div>
-      </BrowserRouter>
-    </ErrorBoundary>
+    <>
+      {/* app kamu */}
+    </>
   );
 }
