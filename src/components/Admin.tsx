@@ -829,8 +829,7 @@ export default function Admin({ onBack }: { onBack: () => void }) {
           </button>
         </motion.div>
       </div>
-  }
-
+  
   return (
     <div className="fixed inset-0 flex h-screen bg-surface text-base-content overflow-hidden font-sans z-[200] transition-colors duration-500">
       {/* MOBILE OVERLAY */}
