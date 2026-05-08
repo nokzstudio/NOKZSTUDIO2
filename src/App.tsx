@@ -143,14 +143,22 @@ export default function App() {
 
   useEffect(() => {
 
-    console.log('OneSignal Loaded');
+  async function initOneSignal() {
 
-    OneSignal.init({
+    await OneSignal.init({
       appId: 'f82bd795-4f0e-4adc-93d9-e8067943a8e8',
       allowLocalhostAsSecureOrigin: true,
     });
 
-  }, []);
+    console.log('OneSignal Loaded');
+
+    OneSignal.Slidedown.promptPush();
+
+  }
+
+  initOneSignal();
+
+}, []);
 
   return (
     <ErrorBoundary>
