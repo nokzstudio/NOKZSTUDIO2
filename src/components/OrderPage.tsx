@@ -261,7 +261,11 @@ if (referenceImage) {
 
     const data = await response.json();
 
-    imageUrl = data.secure_url;
+if (data.secure_url) {
+  imageUrl = data.secure_url;
+} else {
+  throw new Error('Upload gagal');
+}
 
   } catch (error) {
     console.error(error);
