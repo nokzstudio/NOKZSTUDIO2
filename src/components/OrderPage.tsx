@@ -70,7 +70,7 @@ export default function OrderPage() {
   };
 
   const playNotificationSound = () => {
-    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+    const audio = new Audio('https://www.myinstants.com/media/sounds/iphone-apple-store-sound.mp3');
     audio.play().catch(e => console.error('Audio play failed:', e));
   };
 

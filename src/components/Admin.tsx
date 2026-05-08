@@ -179,9 +179,9 @@ export default function Admin({ onBack }: { onBack: () => void }) {
   const playNotificationSound = (type: 'new' | 'completed' | 'delete') => {
     if (!notificationsEnabled) return;
     const sounds = {
-      new: 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3',
+      new: 'https://www.myinstants.com/media/sounds/iphone-apple-store-sound.mp3',
       completed: 'https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3',
-      delete: 'https://assets.mixkit.co/active_storage/sfx/101/101-preview.mp3'
+      delete: 'https://www.myinstants.com/media/sounds/lo-siento-wilson.mp3'
     };
     const audio = new Audio(sounds[type]);
     audio.play().catch(e => console.error('Audio play failed:', e));
