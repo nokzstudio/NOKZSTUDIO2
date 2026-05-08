@@ -1,0 +1,29 @@
+workflows:
+  android-build:
+    name: Android Build
+    max_build_duration: 60
+
+    environment:
+      vars:
+        PACKAGE_NAME: "com.nokzstudio.app"
+
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm install
+
+      - name: Build React app
+        script: |
+          npm run build
+
+      - name: Sync Capacitor
+        script: |
+          npx cap sync android
+
+      - name: Build APK
+        script: |
+          cd android
+          ./gradlew assembleDebug
+
+    artifacts:
+      - android/app/build/outputs/**/*.apk
