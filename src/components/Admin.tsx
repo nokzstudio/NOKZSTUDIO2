@@ -152,7 +152,7 @@ export default function Admin({ onBack }: { onBack: () => void }) {
     clientName: '',
     whatsapp: '',
     service: 'Logo',
-    description: '',
+    brief: '',
     status: 'Belum Dimulai' as Order['status'],
     paymentStatus: 'Belum Bayar' as Order['paymentStatus'],
     amount: 0,
@@ -344,7 +344,7 @@ export default function Admin({ onBack }: { onBack: () => void }) {
       clientName: order.clientName || '',
       whatsapp: order.whatsapp || '',
       service: order.service || 'Logo',
-      description: order.description || '',
+      brief: order.brief || order.description || '',
       status: order.status || 'Belum Dimulai',
       paymentStatus: order.paymentStatus || 'Belum Bayar',
       amount: order.amount || 0,
@@ -364,7 +364,7 @@ export default function Admin({ onBack }: { onBack: () => void }) {
       clientName: '',
       whatsapp: '',
       service: 'Logo',
-      description: '',
+      brief: '',
       status: 'Belum Dimulai',
       paymentStatus: 'Belum Bayar',
       amount: 0,
@@ -398,7 +398,7 @@ export default function Admin({ onBack }: { onBack: () => void }) {
         clientName: '',
         whatsapp: '',
         service: 'Logo',
-        description: '',
+        brief: '',
         status: 'Belum Dimulai',
         paymentStatus: 'Belum Bayar',
         amount: 0,
@@ -771,7 +771,7 @@ export default function Admin({ onBack }: { onBack: () => void }) {
               <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] ml-2">Brief & Requirements</p>
               <div className="p-6 bg-white/[0.02] rounded-[2rem] border border-white/5">
                 <p className="text-sm text-white/60 leading-relaxed whitespace-pre-wrap">
-                  {order.description || 'No detailed instructions provided.'}
+                  {order.brief || order.description || 'No detailed instructions provided.'}
                 </p>
               </div>
             </div>
@@ -1363,8 +1363,8 @@ export default function Admin({ onBack }: { onBack: () => void }) {
                               <textarea
                                 rows={4}
                                 placeholder="Write project instructions here..."
-                                value={orderFormData.description}
-                                onChange={(e) => setOrderFormData({...orderFormData, description: e.target.value})}
+                                value={orderFormData.brief}
+                                onChange={(e) => setOrderFormData({...orderFormData, brief: e.target.value})}
                                 className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 focus:outline-none focus:border-primary/50 text-sm font-medium resize-none transition-all"
                               />
                             </div>

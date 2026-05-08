@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send, Upload, Calendar, User, FileText, ImageIcon } from 'lucide-react';
+import { ArrowLeft, Send, Upload, Calendar, User, FileText, ImageIcon, MessageCircle } from 'lucide-react';
 import { db, auth, storage } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs, limit } from 'firebase/firestore';
 import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
@@ -19,6 +19,7 @@ export default function OrderPage() {
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
   const [formData, setFormData] = useState({
     name: '',
+    whatsapp: '',
     brief: '',
     date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }),
   });
@@ -84,7 +85,7 @@ export default function OrderPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.brief) {
+    if (!formData.name || !formData.whatsapp || !formData.brief) {
       Swal.fire('Error', 'Mohon isi semua field yang wajib', 'error');
       return;
     }
@@ -129,6 +130,7 @@ export default function OrderPage() {
 
       const orderData = {
         clientName: formData.name,
+        whatsapp: formData.whatsapp,
         service: type,
         brief: formData.brief,
         date: formData.date,
@@ -230,6 +232,20 @@ export default function OrderPage() {
               className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-primary transition-colors"
               value={formData.name}
               onChange={(e) => setFormData({...formData, name: e.target.value})}
+            />
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 text-primary">
+              <MessageCircle size={18} />
+              <label className="text-xs font-black uppercase tracking-[0.2em]">Nomor WhatsApp</label>
+            </div>
+            <input 
+              type="tel" 
+              placeholder="Contoh: 08123456789"
+              className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-primary transition-colors"
+              value={formData.whatsapp}
+              onChange={(e) => setFormData({...formData, whatsapp: e.target.value})}
             />
           </div>
 
