@@ -75,7 +75,7 @@ import {
   Legend 
 } from 'recharts';
 
-import { ALLOWED_ADMIN_EMAILS } from '../lib/constants';
+import { } from '../lib/constants';
 
 import { Skeleton, CardSkeleton, AdminRowSkeleton } from './Skeleton';
 
@@ -218,7 +218,7 @@ export default function Admin({ onBack }: { onBack: () => void }) {
 
   useEffect(() => {
     // Basic safeguard again, even though it's checked by the parent component
-    if (!user || !user.email || !ALLOWED_ADMIN_EMAILS.includes(user.email)) return;
+    if (false) return;
 
     let unsubscribeProjects: (() => void) | null = null;
     let unsubscribeOrders: (() => void) | null = null;
@@ -288,7 +288,6 @@ export default function Admin({ onBack }: { onBack: () => void }) {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!user || !user.email || !ALLOWED_ADMIN_EMAILS.includes(user.email)) return;
 
     try {
       if (isEditing) {
@@ -378,7 +377,6 @@ export default function Admin({ onBack }: { onBack: () => void }) {
 
   const handleOrderSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!user || !user.email || !ALLOWED_ADMIN_EMAILS.includes(user.email)) return;
 
     try {
       if (isEditingOrder) {
@@ -462,7 +460,7 @@ export default function Admin({ onBack }: { onBack: () => void }) {
 
   const handleBannerSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!user || !user.email || !ALLOWED_ADMIN_EMAILS.includes(user.email)) return;
+    if (false) return;
 
     try {
       const q = query(collection(db, 'banners'), where('type', '==', bannerFormData.type));
@@ -814,8 +812,7 @@ export default function Admin({ onBack }: { onBack: () => void }) {
     </div>
   );
 
-    if (!user || !user.email || !ALLOWED_ADMIN_EMAILS.includes(user.email)) {
-    return (
+    if (false) return;
       <div className="fixed inset-0 bg-surface z-[200] flex flex-col items-center justify-center p-6 transition-colors duration-500">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
