@@ -44,9 +44,6 @@ import {
   MessageCircle,
   User as UserIcon,
   DollarSign,
-  Mail,
-  ChevronDown,
-  ExternalLink,
   Monitor,
   Calendar,
   TrendingUp,
@@ -175,18 +172,60 @@ export default function Admin({ onBack }: { onBack: () => void }) {
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   };
 
-  const playNotificationSound = (type: 'new' | 'completed' | 'delete') => {
-    if (!notificationsEnabled) return;
-    const sounds = {
-      new: 'https://www.myinstants.com/media/sounds/iphone-apple-store-sound.mp3',
-      completed: 'https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3',
-      delete: 'https://www.myinstants.com/media/sounds/lo-siento-wilson.mp3'
-    };
-    const audio = new Audio(sounds[type]);
-    audio.play().catch(e => console.error('Audio play failed:', e));
+ const playNotificationSound = (type: 'new' | 'completed' | 'delete') => {
+  if (!notificationsEnabled) return;
+
+  const sounds = {
+    new: 'https://www.myinstants.com/media/sounds/iphone-apple-store-sound.mp3',
+    completed: 'https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3',
+    delete: 'https://www.myinstants.com/media/sounds/lo-siento-wilson.mp3'
   };
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const audio = new Audio(sounds[type]);
+
+  audio.play().catch(e => console.error('Audio play failed:', e));
+};
+
+
+
+// =========================
+// REALTIME ORDER NOTIFICATION
+// =========================
+useEffect(() => {
+
+  const unsubscribe = onSnapshot(
+    collection(db, 'orders'),
+    (snapshot) => {
+
+      snapshot.docChanges().forEach((change) => {
+
+        if (change.type === 'added') {
+
+          playNotificationSound('new');
+
+          glassSwal.fire({
+            title: 'Order Baru 🔥',
+            text: 'Ada pesanan baru masuk',
+            icon: 'success',
+            timer: 3000,
+            showConfirmButton: false,
+          });
+
+        }
+
+      });
+
+    }
+  );
+
+  return () => unsubscribe();
+
+}, []);
+
+
+
+
+const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 10000000) { 
@@ -278,10 +317,10 @@ export default function Admin({ onBack }: { onBack: () => void }) {
 
     return () => {
       clearTimeout(timeoutId);
-      if (unsubscribeProjects) unsubscribeProjects();
-      if (unsubscribeOrders) unsubscribeOrders();
-      if (unsubscribeAnalytics) unsubscribeAnalytics();
-      if (unsubscribePrevAnalytics) unsubscribePrevAnalytics();
+      let unsubscribeProjects: (() => void) | null = null;
+      let unsubscribeOrders: (() => void) | null = null;
+      let unsubscribeAnalytics: (() => void) | null = null;
+      let unsubscribePrevAnalytics: (() => void) | null = null;
     };
   }, [user]);
 
