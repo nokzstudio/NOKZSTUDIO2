@@ -7,6 +7,8 @@ import { db } from '../lib/firebase';
 import { collection, query, orderBy, getDocs, doc, updateDoc, increment, limit } from 'firebase/firestore';
 import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
 
+import { Skeleton, CardSkeleton } from './Skeleton';
+
 const mockProjects = [
   { id: 'm1', title: 'Neo Glitch Branding', category: 'Branding', image: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800&auto=format&fit=crop', description: 'Brand identity for a futuristic tech startup.' },
   { id: 'm2', title: 'Liquid Abstract Logo', category: 'Logo', image: 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=800&auto=format&fit=crop', description: 'Fluid organic logo marks for creative studios.' },
@@ -20,12 +22,14 @@ const categories = ['All', 'logo', 'ilustrasi', 'banner', 'design-jersey', 'pack
 
 export default function Portfolio() {
   const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
 
   useEffect(() => {
     const fetchProjects = async () => {
+      setLoading(true);
       try {
         // Limit to latest 60 projects to save quota
         const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'), limit(60));
@@ -35,6 +39,8 @@ export default function Portfolio() {
       } catch (error) {
         handleFirestoreError(error, OperationType.LIST, 'projects');
         setProjects(mockProjects);
+      } finally {
+        setLoading(false);
       }
     };
     
@@ -88,33 +94,39 @@ export default function Portfolio() {
            layout
            className="grid grid-cols-3 gap-2"
         >
-          <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project) => (
-              <motion.div
-                layout
-                key={project.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.4 }}
-                className="group relative cursor-pointer"
-                onClick={() => handleProjectClick(project)}
-              >
-                <div className="relative aspect-square overflow-hidden rounded-2xl bg-base-content/5 border border-base-content/5">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-surface/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-2 flex flex-col justify-end">
-                    <p className="text-[6px] font-black uppercase tracking-widest text-primary mb-0.5">{project.category}</p>
-                    <h3 className="text-[7px] font-bold truncate leading-tight text-white">{project.title}</h3>
+          {loading ? (
+            Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="aspect-square rounded-2xl bg-white/5 animate-pulse" />
+            ))
+          ) : (
+            <AnimatePresence mode="popLayout">
+              {filteredProjects.map((project) => (
+                <motion.div
+                  layout
+                  key={project.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.4 }}
+                  className="group relative cursor-pointer"
+                  onClick={() => handleProjectClick(project)}
+                >
+                  <div className="relative aspect-square overflow-hidden rounded-2xl bg-base-content/5 border border-base-content/5">
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-surface/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-2 flex flex-col justify-end">
+                      <p className="text-[6px] font-black uppercase tracking-widest text-primary mb-0.5">{project.category}</p>
+                      <h3 className="text-[7px] font-bold truncate leading-tight text-white">{project.title}</h3>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          )}
         </motion.div>
       </div>
 

@@ -77,6 +77,8 @@ import {
 
 import { ALLOWED_ADMIN_EMAILS } from '../lib/constants';
 
+import { Skeleton, CardSkeleton, AdminRowSkeleton } from './Skeleton';
+
 interface Project {
   id: string;
   title: string;
@@ -119,6 +121,7 @@ export default function Admin({ onBack }: { onBack: () => void }) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [dataLoading, setDataLoading] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [banners, setBanners] = useState<Banner[]>([]);
@@ -224,6 +227,7 @@ export default function Admin({ onBack }: { onBack: () => void }) {
 
     // Small timeout to ensure the token state is reflected in rules if just logged in
     const timeoutId = setTimeout(() => {
+      setDataLoading(true);
       // Limit to 100 recent projects
       const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'), limit(100));
       unsubscribeProjects = onSnapshot(q, (snapshot) => {
@@ -232,8 +236,10 @@ export default function Admin({ onBack }: { onBack: () => void }) {
           ...doc.data()
         })) as Project[];
         setProjects(docs);
+        setDataLoading(false);
       }, (error) => {
         handleFirestoreError(error, OperationType.LIST, 'projects');
+        setDataLoading(false);
       });
 
       // Limit to 100 recent orders
@@ -975,30 +981,41 @@ export default function Admin({ onBack }: { onBack: () => void }) {
 
                 {/* Quick Insights Row */}
                 <div className="grid grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-6 text-left">
-                  {stats.map((stat: any) => (
-                    <div key={stat.label} className="glass bg-[#1c232d]/40 backdrop-blur-xl p-3 sm:p-7 rounded-[1.2rem] sm:rounded-[2.5rem] border border-white/5 flex flex-col gap-2 sm:gap-6 hover:border-primary/20 transition-all group overflow-hidden">
-                      <div className="flex justify-between items-start">
-                        <div className={cn("w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110", stat.color)}>
-                          <stat.icon size={14} className="sm:w-6 sm:h-6" />
+                  {dataLoading ? (
+                    Array.from({ length: 4 }).map((_, i) => (
+                      <div key={i} className="glass bg-[#1c232d]/40 backdrop-blur-xl p-3 sm:p-7 rounded-[1.2rem] sm:rounded-[2.5rem] border border-white/5 flex flex-col gap-2 sm:gap-6 group overflow-hidden">
+                        <Skeleton className="w-12 h-12 rounded-2xl" />
+                        <div className="space-y-2">
+                          <Skeleton className="h-3 w-1/2" />
+                          <Skeleton className="h-8 w-full" />
                         </div>
-                        {stat.trend !== undefined && (
-                          <div className={cn(
-                            "flex items-center gap-0.5 sm:gap-1 text-[7px] sm:text-[10px] font-black px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg uppercase tracking-widest",
-                            stat.trend >= 0 ? "text-green-500 bg-green-500/10" : "text-red-500 bg-red-500/10"
-                          )}>
-                            {stat.trend >= 0 ? <TrendingUp size={8} className="sm:w-3 sm:h-3" /> : <AlertCircle size={8} className="sm:w-3 sm:h-3 rotate-180" />}
-                            {Math.abs(stat.trend)}%
+                      </div>
+                    ))
+                  ) : (
+                    stats.map((stat: any) => (
+                      <div key={stat.label} className="glass bg-[#1c232d]/40 backdrop-blur-xl p-3 sm:p-7 rounded-[1.2rem] sm:rounded-[2.5rem] border border-white/5 flex flex-col gap-2 sm:gap-6 hover:border-primary/20 transition-all group overflow-hidden">
+                        <div className="flex justify-between items-start">
+                          <div className={cn("w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110", stat.color)}>
+                            <stat.icon size={14} className="sm:w-6 sm:h-6" />
                           </div>
-                        )}
+                          {stat.trend !== undefined && (
+                            <div className={cn(
+                              "flex items-center gap-0.5 sm:gap-1 text-[7px] sm:text-[10px] font-black px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg uppercase tracking-widest",
+                              stat.trend >= 0 ? "text-green-500 bg-green-500/10" : "text-red-500 bg-red-500/10"
+                            )}>
+                              {stat.trend >= 0 ? <TrendingUp size={8} className="sm:w-3 sm:h-3" /> : <AlertCircle size={8} className="sm:w-3 sm:h-3 rotate-180" />}
+                              {Math.abs(stat.trend)}%
+                            </div>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-white/20 text-[6px] sm:text-[10px] font-bold uppercase tracking-[0.1em] sm:tracking-[0.2em] mb-0.5 truncate">{stat.label}</p>
+                          <h4 className="text-[10px] sm:text-3xl font-display font-black tracking-tight truncate">{stat.value}</h4>
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <p className="text-white/20 text-[6px] sm:text-[10px] font-bold uppercase tracking-[0.1em] sm:tracking-[0.2em] mb-0.5 truncate">{stat.label}</p>
-                        <h4 className="text-[10px] sm:text-3xl font-display font-black tracking-tight truncate">{stat.value}</h4>
-                      </div>
-                    </div>
-                  ))}
-                  
-                  </div>
+                    ))
+                  )}
+                </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                   <div className="lg:col-span-2 space-y-8">
@@ -1016,7 +1033,11 @@ export default function Admin({ onBack }: { onBack: () => void }) {
                       </div>
                       
                       <div className="h-[350px] w-full relative z-10">
-                        {chartData.length > 0 ? (
+                        {dataLoading ? (
+                          <div className="h-full flex items-center justify-center">
+                            <div className="w-48 h-48 rounded-full border-8 border-white/5 border-t-primary animate-spin" />
+                          </div>
+                        ) : chartData.length > 0 ? (
                           <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                               <Pie
@@ -1082,30 +1103,36 @@ export default function Admin({ onBack }: { onBack: () => void }) {
                         </button>
                       </div>
                       <div className="space-y-4">
-                        {orders?.slice(0, 4).map((order) => (
-                          <div 
-                            key={order.id} 
-                            onClick={() => setSelectedOrder(order)}
-                            className="p-5 bg-white/[0.02] hover:bg-white/[0.04] rounded-[2rem] border border-white/5 transition-all flex items-center justify-between group cursor-pointer"
-                          >
-                            <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-white/20 font-black">
-                                {order.clientName.charAt(0)}
+                        {dataLoading ? (
+                          Array.from({ length: 4 }).map((_, i) => (
+                            <AdminRowSkeleton key={i} />
+                          ))
+                        ) : (
+                          orders?.slice(0, 4).map((order) => (
+                            <div 
+                              key={order.id} 
+                              onClick={() => setSelectedOrder(order)}
+                              className="p-5 bg-white/[0.02] hover:bg-white/[0.04] rounded-[2rem] border border-white/5 transition-all flex items-center justify-between group cursor-pointer"
+                            >
+                              <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-white/20 font-black">
+                                  {order.clientName.charAt(0)}
+                                </div>
+                                <div className="text-left">
+                                  <p className="text-sm font-bold text-white group-hover:text-primary transition-colors">{order.clientName}</p>
+                                  <p className="text-[10px] text-white/30 uppercase tracking-widest">{order.service}</p>
+                                </div>
                               </div>
-                              <div className="text-left">
-                                <p className="text-sm font-bold text-white group-hover:text-primary transition-colors">{order.clientName}</p>
-                                <p className="text-[10px] text-white/30 uppercase tracking-widest">{order.service}</p>
+                              <div className={cn(
+                                "px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest",
+                                order.status === 'Selesai' ? "bg-green-500/10 text-green-500" :
+                                order.status === 'Dibatalkan' ? "bg-red-500/10 text-red-500" : "bg-primary/10 text-primary"
+                              )}>
+                                {order.status}
                               </div>
                             </div>
-                            <div className={cn(
-                              "px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest",
-                              order.status === 'Selesai' ? "bg-green-500/10 text-green-500" :
-                              order.status === 'Dibatalkan' ? "bg-red-500/10 text-red-500" : "bg-primary/10 text-primary"
-                            )}>
-                              {order.status}
-                            </div>
-                          </div>
-                        ))}
+                          ))
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1453,47 +1480,65 @@ export default function Admin({ onBack }: { onBack: () => void }) {
                         </div>
                         
                         <div className="space-y-4">
-                          {monthOrders.filter((o: Order) => !o.isAccepted).map((o: Order) => (
-                            <motion.div 
-                              key={o.id}
-                              initial={{ opacity: 0, x: -10 }}
-                              whileInView={{ opacity: 1, x: 0 }}
-                              className="glass bg-[#1c232d]/20 backdrop-blur-sm p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] border border-white/5 group relative hover:border-orange-500/30 transition-all shadow-lg"
-                            >
-                              <div className="flex justify-between items-start mb-4">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center font-black text-sm text-primary border border-white/5">
-                                    {o.clientName.charAt(0)}
+                          {dataLoading ? (
+                            Array.from({ length: 3 }).map((_, i) => (
+                              <div key={i} className="p-6 bg-white/5 rounded-[2rem] border border-white/5 animate-pulse space-y-4">
+                                <div className="flex gap-4">
+                                  <Skeleton className="w-12 h-12 rounded-xl" />
+                                  <div className="flex-1 space-y-2">
+                                    <Skeleton className="h-4 w-1/3" />
+                                    <Skeleton className="h-3 w-1/4" />
                                   </div>
-                                  <div>
-                                    <h4 className="font-bold text-sm leading-none mb-1">{o.clientName}</h4>
-                                    <div className="flex items-center gap-2">
-                                      <MessageCircle size={8} className="text-white/20" />
-                                      <span className="text-[9px] font-mono text-white/40 tracking-wider">WA: {o.whatsapp?.slice(0, 4)}...</span>
+                                </div>
+                                <div className="flex gap-2">
+                                  <Skeleton className="h-10 flex-1 rounded-xl" />
+                                  <Skeleton className="h-10 flex-[1.5] rounded-xl" />
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            monthOrders.filter((o: Order) => !o.isAccepted).map((o: Order) => (
+                              <motion.div 
+                                key={o.id}
+                                initial={{ opacity: 0, x: -10 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                className="glass bg-[#1c232d]/20 backdrop-blur-sm p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] border border-white/5 group relative hover:border-orange-500/30 transition-all shadow-lg"
+                              >
+                                <div className="flex justify-between items-start mb-4">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center font-black text-sm text-primary border border-white/5">
+                                      {o.clientName.charAt(0)}
+                                    </div>
+                                    <div>
+                                      <h4 className="font-bold text-sm leading-none mb-1">{o.clientName}</h4>
+                                      <div className="flex items-center gap-2">
+                                        <MessageCircle size={8} className="text-white/20" />
+                                        <span className="text-[9px] font-mono text-white/40 tracking-wider">WA: {o.whatsapp?.slice(0, 4)}...</span>
+                                      </div>
                                     </div>
                                   </div>
+                                  <div className="flex flex-col gap-2">
+                                    <button onClick={() => handleOrderEditClick(o)} className="p-2 transition-colors text-white/20 hover:text-blue-400 bg-white/5 rounded-lg"><Edit3 size={14} /></button>
+                                    <button onClick={() => handleDelete(o.id, 'orders')} className="p-2 transition-colors text-white/20 hover:text-red-400 bg-white/5 rounded-lg"><Trash2 size={14} /></button>
+                                  </div>
                                 </div>
-                                <div className="flex flex-col gap-2">
-                                  <button onClick={() => handleOrderEditClick(o)} className="p-2 transition-colors text-white/20 hover:text-blue-400 bg-white/5 rounded-lg"><Edit3 size={14} /></button>
-                                  <button onClick={() => handleDelete(o.id, 'orders')} className="p-2 transition-colors text-white/20 hover:text-red-400 bg-white/5 rounded-lg"><Trash2 size={14} /></button>
+                                <div className="flex gap-2">
+                                  <button 
+                                    onClick={() => setSelectedOrder(o)}
+                                    className="flex-1 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all"
+                                  >
+                                    Details
+                                  </button>
+                                  <button 
+                                    onClick={() => acceptOrder(o.id)}
+                                    className="flex-[1.5] py-3 bg-orange-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20 active:scale-95"
+                                  >
+                                    <Check size={14} /> Terima Orderan
+                                  </button>
                                 </div>
-                              </div>
-                              <div className="flex gap-2">
-                                <button 
-                                  onClick={() => setSelectedOrder(o)}
-                                  className="flex-1 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all"
-                                >
-                                  Details
-                                </button>
-                                <button 
-                                  onClick={() => acceptOrder(o.id)}
-                                  className="flex-[1.5] py-3 bg-orange-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20 active:scale-95"
-                                >
-                                  <Check size={14} /> Terima Orderan
-                                </button>
-                              </div>
-                            </motion.div>
-                          ))}
+                              </motion.div>
+                            ))
+                          )}
                           {monthOrders.filter((o: Order) => !o.isAccepted).length === 0 && (
                             <div className="py-12 text-center bg-white/[0.02] rounded-[2rem] border border-dashed border-white/5">
                               <p className="text-[10px] text-white/10 uppercase font-black tracking-widest">Antrian Kosong</p>
@@ -1895,40 +1940,46 @@ export default function Admin({ onBack }: { onBack: () => void }) {
                        </div>
 
                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                         {projects.map(p => (
-                           <div key={p.id} className={cn(
-                            "glass bg-[#1c232d]/40 backdrop-blur-xl rounded-[2.5rem] overflow-hidden group hover:border-primary/30 transition-all flex flex-col border border-white/5",
-                            isEditing === p.id && "border-primary shadow-2xl shadow-primary/10"
-                           )}>
-                             <div className="aspect-square relative overflow-hidden">
-                               <img src={p.image} className="w-full h-full object-cover transform duration-1000 group-hover:scale-110" alt="" />
-                               <div className="absolute inset-0 bg-gradient-to-t from-[#1c232d] to-transparent opacity-0 group-hover:opacity-100 transition-all translate-y-4 group-hover:translate-y-0 duration-500">
-                                 <div className="absolute bottom-6 inset-x-6 flex gap-3">
-                                   <button 
-                                     onClick={() => handleEditClick(p)} 
-                                     className="flex-[2] py-4 bg-white/90 backdrop-blur-md text-black rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-primary hover:text-white transition-all active:scale-95"
-                                   >
-                                     REVISE
-                                   </button>
-                                   <button 
-                                     onClick={() => handleDelete(p.id)} 
-                                     className="flex-1 py-4 bg-red-500 text-white rounded-2xl transition-all flex items-center justify-center active:scale-95 shadow-xl shadow-red-500/20"
-                                   >
-                                     <Trash2 size={18} />
-                                   </button>
+                         {dataLoading ? (
+                           Array.from({ length: 4 }).map((_, i) => (
+                             <div key={i} className="aspect-square rounded-[2.5rem] bg-white/5 animate-pulse" />
+                           ))
+                         ) : (
+                           projects.map(p => (
+                             <div key={p.id} className={cn(
+                              "glass bg-[#1c232d]/40 backdrop-blur-xl rounded-[2.5rem] overflow-hidden group hover:border-primary/30 transition-all flex flex-col border border-white/5",
+                              isEditing === p.id && "border-primary shadow-2xl shadow-primary/10"
+                             )}>
+                               <div className="aspect-square relative overflow-hidden">
+                                 <img src={p.image} className="w-full h-full object-cover transform duration-1000 group-hover:scale-110" alt="" />
+                                 <div className="absolute inset-0 bg-gradient-to-t from-[#1c232d] to-transparent opacity-0 group-hover:opacity-100 transition-all translate-y-4 group-hover:translate-y-0 duration-500">
+                                   <div className="absolute bottom-6 inset-x-6 flex gap-3">
+                                     <button 
+                                       onClick={() => handleEditClick(p)} 
+                                       className="flex-[2] py-4 bg-white/90 backdrop-blur-md text-black rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-primary hover:text-white transition-all active:scale-95"
+                                     >
+                                       REVISE
+                                     </button>
+                                     <button 
+                                       onClick={() => handleDelete(p.id)} 
+                                       className="flex-1 py-4 bg-red-500 text-white rounded-2xl transition-all flex items-center justify-center active:scale-95 shadow-xl shadow-red-500/20"
+                                     >
+                                       <Trash2 size={18} />
+                                     </button>
+                                   </div>
+                                 </div>
+                                 <div className="absolute top-4 left-4 z-10 px-3 py-1.5 bg-primary/20 backdrop-blur-md rounded-full border border-primary/20 text-[8px] font-black uppercase tracking-widest text-primary">
+                                   {p.category.replace(/-/g, ' ')}
                                  </div>
                                </div>
-                               <div className="absolute top-4 left-4 z-10 px-3 py-1.5 bg-primary/20 backdrop-blur-md rounded-full border border-primary/20 text-[8px] font-black uppercase tracking-widest text-primary">
-                                 {p.category.replace(/-/g, ' ')}
-                               </div>
-                             </div>
-                             <div className="p-8 flex-grow">
-                                <h4 className="text-xl font-black mb-3 tracking-tight leading-tight">{p.title}</h4>
-                                <p className="text-[10px] text-white/40 leading-relaxed line-clamp-3 font-medium">{p.description}</p>
-                             </div>
-                           </div>
-                         ))}
-                       </div>
+                               <div className="p-8 flex-grow">
+                                  <h4 className="text-xl font-black mb-3 tracking-tight leading-tight">{p.title}</h4>
+                                  <p className="text-[10px] text-white/40 leading-relaxed line-clamp-3 font-medium">{p.description}</p>
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
                        
                        {projects.length === 0 && (
                          <div className="py-24 text-center bg-white/[0.02] rounded-[3rem] border border-dashed border-white/5">
