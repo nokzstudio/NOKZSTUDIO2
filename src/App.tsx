@@ -71,7 +71,7 @@ function AdminPage() {
   );
 
   const handleLogin = (username: string, password: string) => {
-    if (username === "NokzAdm" && password === "AdminNokz") {
+    if (username === "19" && password === "23") {
       localStorage.setItem("adminLoggedIn", "true");
       setIsLoggedIn(true);
     } else {
