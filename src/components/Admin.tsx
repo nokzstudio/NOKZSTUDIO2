@@ -75,7 +75,6 @@ import {
   Legend 
 } from 'recharts';
 
-import from '../lib/constants';
 
 import { Skeleton, CardSkeleton, AdminRowSkeleton } from './Skeleton';
 
