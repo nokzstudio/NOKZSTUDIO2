@@ -13,7 +13,7 @@ import {
 
 import { AnimatePresence, motion } from 'framer-motion';
 
-import { db, storage } from '../lib/firebase';
+import { db } from '../lib/firebase';
 
 import {
   collection,
@@ -24,12 +24,6 @@ import {
   getDocs,
   limit,
 } from 'firebase/firestore';
-
-import {
-  ref as storageRef,
-  uploadBytes,
-  getDownloadURL,
-} from 'firebase/storage';
 
 import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
 
@@ -246,26 +240,39 @@ export default function OrderPage() {
       // =========================
       let imageUrl = '';
 
-      if (referenceImage) {
-        try {
-          const imageRef = storageRef(
-            storage,
-            `orders/${Date.now()}_${referenceImage.name}`
-          );
+if (referenceImage) {
+  try {
+    const imageData = new FormData();
 
-          await uploadBytes(imageRef, referenceImage);
+    imageData.append('file', referenceImage);
 
-          imageUrl = await getDownloadURL(imageRef);
-        } catch (uploadError) {
-          console.error('Upload gagal:', uploadError);
+    imageData.append(
+      'upload_preset',
+      'nokz_unsigned'
+    );
 
-          Swal.fire({
-            title: 'Upload Gagal',
-            text: 'Firebase Storage belum aktif.',
-            icon: 'warning',
-          });
-        }
+    const response = await fetch(
+      'https://api.cloudinary.com/v1_1/dylfsj7g2/image/upload',
+      {
+        method: 'POST',
+        body: imageData,
       }
+    );
+
+    const data = await response.json();
+
+    imageUrl = data.secure_url;
+
+  } catch (error) {
+    console.error(error);
+
+    Swal.fire({
+      title: 'Upload gagal',
+      text: 'Gagal upload gambar',
+      icon: 'error',
+    });
+  }
+}
 
       // =========================
       // SAVE ORDER
