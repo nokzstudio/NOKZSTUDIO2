@@ -2,6 +2,9 @@ workflows:
   android-build:
     name: Android Build
 
+    environment:
+      java: 21
+
     scripts:
       - name: Install dependencies
         script: |
