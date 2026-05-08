@@ -147,9 +147,5 @@ export default function App() {
     });
   }, []);
 
-  return (
-    <>
-      {/* app kamu */}
-    </>
-  );
+  return <div>TEST OK</div>;
 }
