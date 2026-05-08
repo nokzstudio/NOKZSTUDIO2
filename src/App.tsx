@@ -5,7 +5,6 @@
 
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useEffect } from 'react';
-import OneSignal from 'react-onesignal';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -71,7 +70,7 @@ function AdminPage() {
   );
 
   const handleLogin = (username: string, password: string) => {
-    if (username === "19" && password === "23") {
+    if (username === "NokzAdm" && password === "AdminNokz") {
       localStorage.setItem("adminLoggedIn", "true");
       setIsLoggedIn(true);
     } else {
@@ -140,16 +139,13 @@ function AppContent() {
 }
 
 export default function App() {
-
-  useEffect(() => {
-    OneSignal.init({
-      appId: "f82bd795-4f0e-4adc-93d9-e8067943a8e8",
-    });
-  }, []);
-
   return (
-    <>
-      {/* app kamu */}
-    </>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <div className="relative min-h-screen selection:bg-primary/30">
+          <AppContent />
+        </div>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
