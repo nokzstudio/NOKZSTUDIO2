@@ -17,11 +17,9 @@ import Admin from './components/Admin';
 import Login from './components/Login';
 import OrderPage from './components/OrderPage';
 import ErrorBoundary from './components/ErrorBoundary';
-import { auth } from './lib/firebase';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { trackVisit } from './services/analyticsService';
 
-import { ALLOWED_ADMIN_EMAILS } from './lib/constants';
+
+import { trackVisit } from './services/analyticsService';
 
 function HomeContent() {
   const navigate = useNavigate();
@@ -66,36 +64,27 @@ function HomeContent() {
 
 function AdminPage() {
   const navigate = useNavigate();
-  const [firebaseUser, setFirebaseUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      // Only allow specific authorized emails
-      if (user && user.email && ALLOWED_ADMIN_EMAILS.includes(user.email)) {
-        setFirebaseUser(user);
-      } else {
-        setFirebaseUser(null);
-      }
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem("adminLoggedIn") === "true"
+  );
 
-  const handleLogin = (username: string) => {
-    // Session is handled by onAuthStateChanged, but we can force a sync if needed
-    // In this case, Login.tsx already called signInWithGoogle which triggers onAuthStateChanged
+  const handleLogin = (username: string, password: string) => {
+    if (username === "NokzAdm" && password === "AdminNokz") {
+      localStorage.setItem("adminLoggedIn", "true");
+      setIsLoggedIn(true);
+    } else {
+      alert("Username atau password salah");
+    }
   };
 
-  const handleLogout = async () => {
-    await signOut(auth);
-    setFirebaseUser(null);
-    navigate('/');
+  const handleLogout = () => {
+    localStorage.removeItem("adminLoggedIn");
+    setIsLoggedIn(false);
+    navigate("/");
   };
 
-  if (loading) return null;
-
-  if (!firebaseUser) {
+  if (!isLoggedIn) {
     return <Login onLogin={handleLogin} />;
   }
 
