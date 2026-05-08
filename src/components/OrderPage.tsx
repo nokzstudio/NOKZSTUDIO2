@@ -259,22 +259,43 @@ if (referenceImage) {
       }
     );
 
-    const data = await response.json();
+    console.log('STATUS:', response.status);
 
-if (data.secure_url) {
-  imageUrl = data.secure_url;
-} else {
-  throw new Error('Upload gagal');
-}
+    const text = await response.text();
 
-  } catch (error) {
-    console.error(error);
+    console.log('RAW RESPONSE:', text);
+
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error('Response bukan JSON');
+    }
+
+    console.log('PARSED:', data);
+
+    if (!response.ok) {
+      throw new Error(
+        data?.error?.message ||
+        'Upload gagal'
+      );
+    }
+
+    imageUrl = data.secure_url || '';
+
+  } catch (error: any) {
+    console.error('UPLOAD ERROR:', error);
 
     Swal.fire({
       title: 'Upload gagal',
-      text: 'Gagal upload gambar',
+      text: error.message || 'Cloudinary error',
       icon: 'error',
     });
+
+    setLoading(false);
+
+    return;
   }
 }
 
