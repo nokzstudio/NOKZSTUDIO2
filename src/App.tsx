@@ -141,11 +141,12 @@ function AppContent() {
 
 export default function App() {
 
-  useEffect(() => {
-    OneSignal.init({
-      appId: "f82bd795-4f0e-4adc-93d9-e8067943a8e8",
-    });
-  }, []);
+ useEffect(() => {
+  console.log("OneSignal init mulai");
 
-  return <div>TEST OK</div>;
-}
+  OneSignal.init({
+    appId: "f82bd795-4f0e-4adc-93d9-e8067943a8e8",
+  });
+
+  console.log("OneSignal initialized");
+}, []);
