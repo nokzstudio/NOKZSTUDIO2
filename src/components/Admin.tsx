@@ -1,6 +1,6 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { auth, db, signInWithGoogle } from '../lib/firebase';
+import { auth, db } from '../lib/firebase';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { useTheme } from '../context/ThemeContext';
 import { 
@@ -827,12 +827,7 @@ export default function Admin({ onBack }: { onBack: () => void }) {
           </div>
           <h2 className="text-3xl font-display font-extrabold mb-4 text-base-content uppercase tracking-tight">ADMIN ONLY</h2>
           <p className="text-base-content/50 mb-10">Only authorized creators can access the portfolio management suite.</p>
-          <button 
-            onClick={signInWithGoogle}
-            className="w-full py-4 bg-primary text-white rounded-2xl font-bold hover:bg-primary/90 transition-all active:scale-95 mb-4 shadow-xl shadow-primary/20"
-          >
-            Login with Google
-          </button>
+        
           <button onClick={onBack} className="text-base-content/40 hover:text-base-content transition-colors text-sm font-bold uppercase tracking-widest">
             Back to Website
           </button>

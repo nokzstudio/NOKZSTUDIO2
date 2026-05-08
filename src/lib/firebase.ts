@@ -1,7 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 import { 
-  getFirestore, 
   initializeFirestore, 
   persistentLocalCache, 
   persistentSingleTabManager 
@@ -11,7 +10,6 @@ import firebaseConfig from '../../firebase-applet-config.json';
 
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firestore with persistent cache to save read quota on repeated visits
 export const db = initializeFirestore(app, {
   localCache: persistentLocalCache({
     tabManager: persistentSingleTabManager({})
@@ -20,6 +18,3 @@ export const db = initializeFirestore(app, {
 
 export const auth = getAuth(app);
 export const storage = getStorage(app);
-export const googleProvider = new GoogleAuthProvider();
-
-export const signInWithGoogle = () => signInWithRedirect(auth, googleProvider);
