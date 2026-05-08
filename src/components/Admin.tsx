@@ -75,7 +75,7 @@ import {
   Legend 
 } from 'recharts';
 
-import { } from '../lib/constants';
+import from '../lib/constants';
 
 import { Skeleton, CardSkeleton, AdminRowSkeleton } from './Skeleton';
 
@@ -830,7 +830,6 @@ export default function Admin({ onBack }: { onBack: () => void }) {
           </button>
         </motion.div>
       </div>
-    );
   }
 
   return (
