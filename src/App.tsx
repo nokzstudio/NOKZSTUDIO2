@@ -5,6 +5,7 @@
 
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useEffect } from 'react';
+import OneSignal from 'react-onesignal';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -139,6 +140,14 @@ function AppContent() {
 }
 
 export default function App() {
+
+  useEffect(() => {
+    OneSignal.init({
+      appId: 'f82bd795-4f0e-4adc-93d9-e8067943a8e8',
+      allowLocalhostAsSecureOrigin: true,
+    });
+  }, []);
+
   return (
     <ErrorBoundary>
       <BrowserRouter>
