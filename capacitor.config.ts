@@ -1,9 +1,17 @@
-import type { CapacitorConfig } from '@capacitor/cli';
+import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.nokzstd.app',
-  appName: 'NokzApp',
-  webDir: 'dist'
+  appId: 'com.nokz.studio',        // GANTI INI sesuai dengan app id kamu
+  appName: 'Nokz Studio',
+  webDir: 'dist',
+  server: {
+    androidScheme: 'https'
+  },
+  plugins: {
+    OneSignal: {
+      googleProjectNumber: "REMOTE",
+    }
+  }
 };
 
 export default config;
