@@ -9,7 +9,6 @@ workflows:
         NODE_VERSION: "20"
 
     scripts:
-      scripts:
   - name: Install dependencies
     script: npm ci --prefer-offline
 
@@ -26,6 +25,6 @@ workflows:
   - name: Build APK Release
     working_directory: android
     script: ./gradlew assembleRelease --stacktrace
-    
+
     artifacts:
       - android/app/build/outputs/apk/release/app-release.apk
