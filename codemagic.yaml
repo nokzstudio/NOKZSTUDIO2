@@ -3,30 +3,24 @@ workflows:
     name: Android Release Build
     max_build_duration: 60
     instance_type: mac_mini_m2
+
     environment:
       vars:
         NODE_VERSION: "20"
-      android_signing:
-        - keystore_reference          # pastikan keystore sudah diupload di Codemagic
+
     scripts:
       - name: Install dependencies
-        script: |
-          npm ci --prefer-offline
+        script: npm ci --prefer-offline
 
       - name: Build Web (Vite)
-        script: |
-          npm run build
+        script: npm run build
 
       - name: Sync Capacitor Android
-        script: |
-          npx cap sync android
+        script: npx cap sync android
 
       - name: Build APK Release
         working_directory: android
-        script: |
-          ./gradlew assembleRelease --stacktrace
+        script: ./gradlew assembleRelease --stacktrace
 
     artifacts:
       - android/app/build/outputs/apk/release/app-release.apk
-
-    # Publishing dihapus sementara (bisa ditambahkan nanti)
