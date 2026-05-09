@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">NokzApp</string>
-    <string name="title_activity_main">NokzApp</string>
-    <string name="package_name">com.nokzstd.app</string>
-    <string name="custom_url_scheme">com.nokzstd.app</string>
+    <string name="app_name">Nokz Studio</string>
+    <string name="title_activity_main">Nokz Studio</string>
+    <string name="package_name">com.nokz.studio</string>
+    <string name="custom_url_scheme">com.nokz.studio</string>
 </resources>

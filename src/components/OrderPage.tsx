@@ -31,6 +31,7 @@ import Swal from 'sweetalert2';
 
 // === Capacitor Camera ===
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Capacitor } from '@capacitor/core';
 
 export default function OrderPage() {
   const { type } = useParams();
@@ -99,37 +100,65 @@ export default function OrderPage() {
   // =========================
   // HANDLE IMAGE - Capacitor Camera
   // =========================
-  const handleTakeOrPickImage = async () => {
-    try {
-      const photo = await Camera.getPhoto({
-        quality: 85,
-        allowEditing: true,
-        resultType: CameraResultType.Uri,
-        source: CameraSource.Prompt,
-        width: 1200,
-        height: 1200,
-        correctOrientation: true,
-      });
+const handleTakeOrPickImage = async () => {
+  try {
+    // Kalau WEB/localhost
+    if (Capacitor.getPlatform() === 'web') {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
 
-      setImagePreview(photo.webPath!);
+      input.onchange = (e: any) => {
+        const file = e.target.files[0];
 
-      const response = await fetch(photo.webPath!);
-      const blob = await response.blob();
-      const file = new File([blob], `reference_${Date.now()}.jpg`, { 
-        type: blob.type || 'image/jpeg' 
-      });
+        if (!file) return;
 
-      setReferenceImage(file);
-    } catch (error: any) {
-      if (error.message?.toLowerCase().includes('cancel') || 
-          error.message?.toLowerCase().includes('user')) {
-        return;
-      }
-      Swal.fire('Error', 'Gagal mengambil gambar', 'error');
-      console.error(error);
+        setReferenceImage(file);
+
+        const previewUrl = URL.createObjectURL(file);
+        setImagePreview(previewUrl);
+      };
+
+      input.click();
+      return;
     }
-  };
 
+    // Kalau Android APK
+    const photo = await Camera.getPhoto({
+      quality: 85,
+      allowEditing: true,
+      resultType: CameraResultType.Uri,
+      source: CameraSource.Prompt,
+      width: 1200,
+      height: 1200,
+      correctOrientation: true,
+    });
+
+    setImagePreview(photo.webPath!);
+
+    const response = await fetch(photo.webPath!);
+    const blob = await response.blob();
+
+    const file = new File(
+      [blob],
+      `reference_${Date.now()}.jpg`,
+      {
+        type: blob.type || 'image/jpeg',
+      }
+    );
+
+    setReferenceImage(file);
+
+  } catch (error: any) {
+    console.error(error);
+
+    Swal.fire(
+      'Error',
+      'Gagal mengambil gambar',
+      'error'
+    );
+  }
+};
   // =========================
   // HANDLE SUBMIT
   // =========================
@@ -285,7 +314,85 @@ export default function OrderPage() {
         <form onSubmit={handleSubmit} className="glass p-8 rounded-[2.5rem] border border-white/10 shadow-2xl space-y-6 backdrop-blur-xl bg-white/[0.02]">
           {/* Name, WhatsApp, Date, Brief ... (sama seperti sebelumnya) */}
           {/* ... kamu bisa copy bagian input name, whatsapp, date, brief dari kode lama */}
+{/* NAMA */}
+<div className="space-y-3">
+  <div className="flex items-center gap-3 text-primary">
+    <User size={18} />
+    <label className="text-xs font-black uppercase tracking-[0.2em]">
+      Nama
+    </label>
+  </div>
 
+  <input
+    type="text"
+    value={formData.name}
+    onChange={(e) =>
+      setFormData({ ...formData, name: e.target.value })
+    }
+    placeholder="Masukkan nama"
+    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm outline-none"
+    required
+  />
+</div>
+
+{/* WHATSAPP */}
+<div className="space-y-3">
+  <div className="flex items-center gap-3 text-primary">
+    <MessageCircle size={18} />
+    <label className="text-xs font-black uppercase tracking-[0.2em]">
+      WhatsApp
+    </label>
+  </div>
+
+  <input
+    type="text"
+    value={formData.whatsapp}
+    onChange={(e) =>
+      setFormData({ ...formData, whatsapp: e.target.value })
+    }
+    placeholder="08xxxxxxxxxx"
+    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm outline-none"
+    required
+  />
+</div>
+
+{/* TANGGAL */}
+<div className="space-y-3">
+  <div className="flex items-center gap-3 text-primary">
+    <Calendar size={18} />
+    <label className="text-xs font-black uppercase tracking-[0.2em]">
+      Tanggal
+    </label>
+  </div>
+
+  <input
+    type="text"
+    value={formData.date}
+    readOnly
+    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm outline-none"
+  />
+</div>
+
+{/* BRIEF */}
+<div className="space-y-3">
+  <div className="flex items-center gap-3 text-primary">
+    <FileText size={18} />
+    <label className="text-xs font-black uppercase tracking-[0.2em]">
+      Brief Pesanan
+    </label>
+  </div>
+
+  <textarea
+    value={formData.brief}
+    onChange={(e) =>
+      setFormData({ ...formData, brief: e.target.value })
+    }
+    placeholder="Jelaskan pesanan kamu..."
+    rows={5}
+    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm outline-none resize-none"
+    required
+  />
+</div>
           {/* IMAGE UPLOAD - Bagian yang baru */}
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-primary">

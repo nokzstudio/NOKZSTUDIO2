@@ -1,4 +1,4 @@
-package com.nokzstd.app;
+package com.nokz.studio;
 
 import com.getcapacitor.BridgeActivity;
 
