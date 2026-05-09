@@ -5,9 +5,9 @@ workflows:
     instance_type: mac_mini_m2
 
     environment:
-  vars:
-    NODE_VERSION: "20"
-  java: 17
+      java: 17
+      vars:
+        NODE_VERSION: "20"
 
     scripts:
       - name: Install dependencies
