@@ -1,16 +1,15 @@
 workflows:
   android-release:
     name: Android Release Build
-    max_build_duration: 45
+    max_build_duration: 60
     instance_type: mac_mini_m2
     environment:
       vars:
-        NODE_VERSION: "20"                  # atau "18" sesuai kebutuhan
-        # PACKAGE_NAME: "com.nokz.studio"   # optional, bisa ditambah nanti
+        NODE_VERSION: "20"
       android_signing:
-        - keystore_reference               # pastikan sudah upload keystore di Codemagic
+        - keystore_reference          # pastikan keystore sudah diupload di Codemagic
     scripts:
-      - name: Install npm dependencies
+      - name: Install dependencies
         script: |
           npm ci --prefer-offline
 
@@ -22,10 +21,6 @@ workflows:
         script: |
           npx cap sync android
 
-      - name: Set up local.properties
-        script: |
-          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"
-
       - name: Build APK Release
         working_directory: android
         script: |
@@ -34,9 +29,4 @@ workflows:
     artifacts:
       - android/app/build/outputs/apk/release/app-release.apk
 
-    publishing:
-      # Uncomment jika ingin otomatis upload ke Google Play
-      # google_play:
-      #   credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
-      #   track: internal
-      #   submit_as_draft: true
+    # Publishing dihapus sementara (bisa ditambahkan nanti)
