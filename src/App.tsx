@@ -14,6 +14,7 @@ import Portfolio from './components/Portfolio';
 import Contact from './components/Contact';
 import CustomCursor from './components/CustomCursor';
 import LoadingScreen from './components/LoadingScreen';
+import { Capacitor } from '@capacitor/core';
 import Admin from './components/Admin';
 import Login from './components/Login';
 import OrderPage from './components/OrderPage';
@@ -108,24 +109,32 @@ function ScrollToTop() {
 }
 
 export default function App() {
-
+useEffect(() => {
+  trackVisit();
+}, []);
   // =========================
   // ONESIGNAL INITIALIZATION
   // =========================
-  useEffect(() => {
-    // Inisialisasi OneSignal
+ useEffect(() => {
+
+  // 🚨 hanya jalan di APK (Android/iOS)
+  if (!Capacitor.isNativePlatform()) {
+    console.log("⚠️ OneSignal dilewati di web");
+    return;
+  }
+
+  try {
     OneSignal.initialize("f82bd795-4f0e-4adc-93d9-e8067943a8e8");
 
-    // Minta izin notifikasi
     OneSignal.Notifications.requestPermission(true)
       .then((accepted: boolean) => {
         console.log("✅ Izin notifikasi:", accepted ? "Diterima" : "Ditolak");
       });
 
-    // Listener ketika notifikasi diklik
     const handleNotificationClick = (event: any) => {
-      console.log("Notifikasi diklik:", event);
-      if (event.notification?.additionalData?.orderId || event.notification?.additionalData?.screen === "admin") {
+      const data = event?.notification?.additionalData;
+
+      if (data?.orderId || data?.screen === "admin") {
         window.location.href = "/admin";
       }
     };
@@ -135,7 +144,12 @@ export default function App() {
     return () => {
       OneSignal.Notifications.removeEventListener('click', handleNotificationClick);
     };
-  }, []);
+
+  } catch (err) {
+    console.log("OneSignal error (ignored):", err);
+  }
+
+}, []);
 
   return (
     <ErrorBoundary>

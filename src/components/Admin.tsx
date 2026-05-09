@@ -72,7 +72,16 @@ import {
   Legend 
 } from 'recharts';
 
+import { Capacitor } from '@capacitor/core';
+const playNotificationSound = () => {
+  const audio = new Audio('/notification.mp3');
 
+  if (Capacitor.isNativePlatform()) {
+    audio.play().catch(err => {
+      console.log('Audio error:', err);
+    });
+  }
+};
 import { Skeleton, CardSkeleton, AdminRowSkeleton } from './Skeleton';
 
 interface Project {
@@ -172,7 +181,7 @@ export default function Admin({ onBack }: { onBack: () => void }) {
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   };
 
- const playNotificationSound = (type: 'new' | 'completed' | 'delete') => {
+ const playNotificationSound = (type: 'new' | 'completed' | 'delete' = 'new') => {
   if (!notificationsEnabled) return;
 
   const sounds = {
@@ -200,8 +209,9 @@ useEffect(() => {
       snapshot.docChanges().forEach((change) => {
 
         if (change.type === 'added') {
-
-          playNotificationSound('new');
+          if (Capacitor.isNativePlatform()) {
+          playNotificationSound();
+        }
 
           glassSwal.fire({
             title: 'Order Baru 🔥',
@@ -210,7 +220,7 @@ useEffect(() => {
             timer: 3000,
             showConfirmButton: false,
           });
-
+  
         }
 
       });
@@ -1066,32 +1076,35 @@ const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
                             <div className="w-48 h-48 rounded-full border-8 border-white/5 border-t-primary animate-spin" />
                           </div>
                         ) : chartData.length > 0 ? (
-                          <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                              <Pie
-                                data={chartData}
-                                cx="50%"
-                                cy="50%"
-                                innerRadius={80}
-                                outerRadius={120}
-                                paddingAngle={5}
-                                dataKey="value"
-                                stroke="none"
-                              >
-                                {chartData.map((entry, index) => (
-                                  <Cell key={`cell-${index}`} fill={entry.color} />
-                                ))}
-                              </Pie>
-                              <RechartsTooltip 
-                                contentStyle={{ 
-                                  backgroundColor: '#1c232d', 
-                                  border: '1px solid rgba(255,255,255,0.1)',
-                                  borderRadius: '1rem',
-                                  fontSize: '12px'
-                                }} 
-                              />
-                            </PieChart>
-                          </ResponsiveContainer>
+                          <div className="w-full h-[320px] min-h-[320px]">
+  <ResponsiveContainer width="100%" height="100%">
+    <PieChart>
+      <Pie
+        data={chartData}
+        cx="50%"
+        cy="50%"
+        innerRadius={80}
+        outerRadius={120}
+        paddingAngle={5}
+        dataKey="value"
+        stroke="none"
+      >
+        {chartData.map((entry, index) => (
+          <Cell key={`cell-${index}`} fill={entry.color} />
+        ))}
+      </Pie>
+
+      <RechartsTooltip 
+        contentStyle={{ 
+          backgroundColor: '#1c232d', 
+          border: '1px solid rgba(255,255,255,0.1)',
+          borderRadius: '1rem',
+          fontSize: '12px'
+        }} 
+      />
+    </PieChart>
+  </ResponsiveContainer>
+</div>
                         ) : (
                           <div className="h-full flex flex-col items-center justify-center text-white/20">
                             <LayoutGrid size={40} className="mb-4 opacity-20" />
