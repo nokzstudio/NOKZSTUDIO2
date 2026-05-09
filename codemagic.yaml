@@ -9,18 +9,23 @@ workflows:
         NODE_VERSION: "20"
 
     scripts:
-      - name: Install dependencies
-        script: npm ci --prefer-offline
+      scripts:
+  - name: Install dependencies
+    script: npm ci --prefer-offline
 
-      - name: Build Web (Vite)
-        script: npm run build
+  - name: Build Web (Vite)
+    script: npm run build
 
-      - name: Sync Capacitor Android
-        script: npx cap sync android
+  - name: Sync Capacitor Android
+    script: npx cap sync android
 
-      - name: Build APK Release
-        working_directory: android
-        script: ./gradlew assembleRelease --stacktrace
+  - name: Fix gradlew permission
+    working_directory: android
+    script: chmod +x gradlew
 
+  - name: Build APK Release
+    working_directory: android
+    script: ./gradlew assembleRelease --stacktrace
+    
     artifacts:
       - android/app/build/outputs/apk/release/app-release.apk
