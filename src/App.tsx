@@ -5,6 +5,7 @@
 
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useEffect } from 'react';
+import OneSignal from '@onesignal/capacitor-plugin';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -139,6 +140,29 @@ function AppContent() {
 }
 
 export default function App() {
+  useEffect(() => {
+    const handleNotificationClick = (event: any) => {
+      console.log("Notifikasi diklik:", event);
+      
+      // Contoh: Jika ada data orderId, langsung buka halaman admin/order
+      if (event.notification?.additionalData?.orderId) {
+        // Bisa pakai window.location atau navigate jika pakai state global
+        window.location.href = "/admin"; 
+      } else {
+        window.location.href = "/admin"; // default ke halaman admin
+      }
+    };
+
+    // Daftarkan listener
+    OneSignal.Notifications.addEventListener('click', handleNotificationClick);
+
+    return () => {
+      // Cleanup
+      OneSignal.Notifications.removeEventListener('click', handleNotificationClick);
+    };
+  }, []);
+  // ======================================
+
   return (
     <ErrorBoundary>
       <BrowserRouter>
