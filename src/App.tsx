@@ -19,11 +19,9 @@ import Login from './components/Login';
 import OrderPage from './components/OrderPage';
 import ErrorBoundary from './components/ErrorBoundary';
 
-
 import { trackVisit } from './services/analyticsService';
 
 function HomeContent() {
-  const navigate = useNavigate();
   return (
     <motion.div
       key="home"
@@ -65,7 +63,6 @@ function HomeContent() {
 
 function AdminPage() {
   const navigate = useNavigate();
-
   const [isLoggedIn, setIsLoggedIn] = useState(
     localStorage.getItem("adminLoggedIn") === "true"
   );
@@ -110,64 +107,48 @@ function ScrollToTop() {
   return null;
 }
 
-function AppContent() {
-  const location = useLocation();
-  const [loading, setLoading] = useState(() => {
-    // Skip loading screen if we're going straight to an order page or admin
-    return !location.pathname.startsWith('/order/') && location.pathname !== '/admin';
-  });
-
-  useEffect(() => {
-    trackVisit();
-  }, []);
-
-  if (loading) {
-    return <LoadingScreen onFinished={() => setLoading(false)} />;
-  }
-
-  return (
-    <>
-      <ScrollToTop />
-      <AnimatePresence mode="wait">
-        <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<HomeContent />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/order/:type" element={<OrderPage />} />
-        </Routes>
-      </AnimatePresence>
-    </>
-  );
-}
-
 export default function App() {
+
+  // =========================
+  // ONESIGNAL INITIALIZATION
+  // =========================
   useEffect(() => {
+    // Inisialisasi OneSignal
+    OneSignal.initialize("f82bd795-4f0e-4adc-93d9-e8067943a8e8");
+
+    // Minta izin notifikasi
+    OneSignal.Notifications.requestPermission(true)
+      .then((accepted: boolean) => {
+        console.log("✅ Izin notifikasi:", accepted ? "Diterima" : "Ditolak");
+      });
+
+    // Listener ketika notifikasi diklik
     const handleNotificationClick = (event: any) => {
       console.log("Notifikasi diklik:", event);
-      
-      // Contoh: Jika ada data orderId, langsung buka halaman admin/order
-      if (event.notification?.additionalData?.orderId) {
-        // Bisa pakai window.location atau navigate jika pakai state global
-        window.location.href = "/admin"; 
-      } else {
-        window.location.href = "/admin"; // default ke halaman admin
+      if (event.notification?.additionalData?.orderId || event.notification?.additionalData?.screen === "admin") {
+        window.location.href = "/admin";
       }
     };
 
-    // Daftarkan listener
     OneSignal.Notifications.addEventListener('click', handleNotificationClick);
 
     return () => {
-      // Cleanup
       OneSignal.Notifications.removeEventListener('click', handleNotificationClick);
     };
   }, []);
-  // ======================================
 
   return (
     <ErrorBoundary>
       <BrowserRouter>
         <div className="relative min-h-screen selection:bg-primary/30">
-          <AppContent />
+          <ScrollToTop />
+          <AnimatePresence mode="wait">
+            <Routes>
+              <Route path="/" element={<HomeContent />} />
+              <Route path="/admin" element={<AdminPage />} />
+              <Route path="/order/:type" element={<OrderPage />} />
+            </Routes>
+          </AnimatePresence>
         </div>
       </BrowserRouter>
     </ErrorBoundary>
