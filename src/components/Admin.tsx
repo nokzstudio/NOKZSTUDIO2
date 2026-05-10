@@ -2049,10 +2049,11 @@ const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
                   <div className="glass bg-[#1c232d]/40 backdrop-blur-3xl p-8 lg:p-12 rounded-[3.5rem] border border-white/5 space-y-12">
                     <div className="flex flex-col md:flex-row items-center gap-8 p-10 bg-white/[0.02] rounded-[2.5rem] border border-white/5 relative overflow-hidden group">
                       <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity blur-3xl -z-10" />
-                      <img src={user.photoURL || ''} className="w-24 h-24 rounded-3xl border-2 border-primary/20 shadow-2xl shadow-primary/20 group-hover:scale-105 transition-transform duration-500" alt="profile" />
+                      {/* ✅ FIX: user?.photoURL, user?.displayName, user?.email */}
+                      <img src={user?.photoURL || ''} className="w-24 h-24 rounded-3xl border-2 border-primary/20 shadow-2xl shadow-primary/20 group-hover:scale-105 transition-transform duration-500" alt="profile" />
                       <div className="text-center md:text-left">
-                        <h3 className="text-3xl font-black tracking-tight">{user.displayName}</h3>
-                        <p className="text-white/30 font-mono text-xs uppercase tracking-widest break-all mt-1">{user.email}</p>
+                        <h3 className="text-3xl font-black tracking-tight">{user?.displayName}</h3>
+                        <p className="text-white/30 font-mono text-xs uppercase tracking-widest break-all mt-1">{user?.email}</p>
                         <div className="flex items-center justify-center md:justify-start gap-2.5 mt-4">
                           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                           <span className="text-[10px] font-black text-green-500 uppercase tracking-widest bg-green-500/5 px-3 py-1 rounded-full border border-green-500/10">Active Session</span>
