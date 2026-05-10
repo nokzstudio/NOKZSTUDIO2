@@ -24,7 +24,8 @@ workflows:
       - name: Build Signed Release APK
         script: |
           cd android
-          
+          chmod +x ./gradlew
+
           # Inject signing
           echo "android.injected.signing.store.file=$CM_KEYSTORE" >> gradle.properties
           echo "android.injected.signing.store.password=$CM_KEYSTORE_PASSWORD" >> gradle.properties
