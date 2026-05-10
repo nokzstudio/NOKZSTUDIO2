@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "574951706903",
+    "project_id": "ai-studio-applet-webapp-6d777",
+    "storage_bucket": "ai-studio-applet-webapp-6d777.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:574951706903:android:f0c7112e53a9c2c2316752",
+        "android_client_info": {
+          "package_name": "com.nokz.studio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "574951706903-cv3hudvguhatc47rmquaks7e0rb9d3r9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJRagb6lKSa134u9v6lwExyXHRdN-47xw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "574951706903-cv3hudvguhatc47rmquaks7e0rb9d3r9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
