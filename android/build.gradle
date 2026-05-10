@@ -1,7 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-ext.kotlin_version = '1.9.20'
-
 buildscript {
     
     repositories {
@@ -9,11 +7,11 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.10.1'
+        classpath 'com.android.tools.build:gradle:8.13.0'
         classpath 'com.google.gms:google-services:4.4.4'
-        
-        // Kotlin plugin fixed for Capacitor and OneSignal plugin compatibility
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.20'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
     }
 }
 
@@ -24,52 +22,8 @@ allprojects {
         google()
         mavenCentral()
     }
-    
-    plugins.withId('com.android.library') {
-        android {
-            compileOptions {
-                sourceCompatibility JavaVersion.VERSION_17
-                targetCompatibility JavaVersion.VERSION_17
-            }
-        }
-    }
-    
-    plugins.withId('com.android.application') {
-        android {
-            compileOptions {
-                sourceCompatibility JavaVersion.VERSION_17
-                targetCompatibility JavaVersion.VERSION_17
-            }
-        }
-    }
-}
-
-subprojects {
-    configurations.all {
-        resolutionStrategy.eachDependency { details ->
-            if (details.requested.group == 'org.jetbrains.kotlin' && details.requested.name.startsWith('kotlin-')) {
-                details.useVersion '1.9.20'
-                details.because('Enforce a single Kotlin version for all Android subprojects')
-            }
-        }
-    }
-
-    afterEvaluate { project ->
-        if (project.plugins.hasPlugin('com.android.library') || project.plugins.hasPlugin('com.android.application')) {
-            project.android.compileOptions.sourceCompatibility = JavaVersion.VERSION_17
-            project.android.compileOptions.targetCompatibility = JavaVersion.VERSION_17
-            project.tasks.withType(org.gradle.api.tasks.compile.JavaCompile).configureEach { compileTask ->
-                compileTask.sourceCompatibility = '17'
-                compileTask.targetCompatibility = '17'
-            }
-        }
-        project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach { kotlinCompileTask ->
-            kotlinCompileTask.kotlinOptions.jvmTarget = '17'
-        }
-    }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
-

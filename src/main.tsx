@@ -13,12 +13,17 @@ const initializeOneSignal = async () => {
   }
 
   try {
-    const { OneSignal } = await import('@onesignal/capacitor-plugin');
+    // Import yang BENAR
+    const OneSignal = (await import('@onesignal/capacitor-plugin')).default;
+
     await OneSignal.initialize("f82bd795-4f0e-4adc-93d9-e8067943a8e8");
-    OneSignal.Debug.setLogLevel(6);
+    
+    OneSignal.Debug.setLogLevel(6);           // 0 = None, 6 = Verbose
     const hasPermission = await OneSignal.Notifications.requestPermission(true);
+    
     console.log("OneSignal Permission:", hasPermission);
     await OneSignal.login("admin_nokz");
+    
     console.log("✅ OneSignal berhasil diinisialisasi");
   } catch (error) {
     console.error("❌ OneSignal error:", error);

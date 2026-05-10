@@ -3,7 +3,6 @@ apply plugin: 'com.android.application'
 android {
     namespace = "com.nokz.studio"
     compileSdk = rootProject.ext.compileSdkVersion
-
     defaultConfig {
         applicationId "com.nokz.studio"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -11,18 +10,12 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
         aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
-
-    // ✅ FIX penting: biar gak error "invalid source release"
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -32,7 +25,7 @@ android {
 }
 
 repositories {
-    flatDir {
+    flatDir{
         dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
     }
 }
@@ -51,12 +44,11 @@ dependencies {
 
 apply from: 'capacitor.build.gradle'
 
-// Google services optional
 try {
     def servicesJSON = file('google-services.json')
     if (servicesJSON.text) {
         apply plugin: 'com.google.gms.google-services'
     }
 } catch(Exception e) {
-    logger.info("google-services.json not found, google-services plugin not applied.")
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
 }
