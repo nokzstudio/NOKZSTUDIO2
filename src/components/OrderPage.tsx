@@ -166,11 +166,10 @@ export default function OrderPage() {
         const ONESIGNAL_APP_ID = "f82bd795-4f0e-4adc-93d9-e8067943a8e8";
         const ONESIGNAL_REST_API_KEY = "tfe7wupbmebevcgztrobnhz7s";
 
-        await axios.post("https://onesignal.com/api/v1/notifications", {
+        const notificationPayload = {
           app_id: ONESIGNAL_APP_ID,
           included_segments: ["All Subscribed Users"],
-          android_accent_color: "FF0000FF", // Warna biru untuk ikon
-          priority: 10, // High Priority agar muncul di status bar
+          priority: 10,
           headings: {
             en: "🛒 Order Baru Masuk!",
             id: "🛒 Order Baru Masuk!"
@@ -180,15 +179,24 @@ export default function OrderPage() {
             id: `Ada order baru dari ${formData.name} (${type?.toUpperCase()})`
           },
           data: {
-            screen: "admin"
+            screen: "admin",
+            orderId: deviceId
           }
-        }, {
+        };
+
+        // Kirim menggunakan fetch agar lebih ringan dan mudah didebug
+        fetch("https://onesignal.com/api/v1/notifications", {
+          method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json; charset=utf-8",
             "Authorization": `Basic ${ONESIGNAL_REST_API_KEY}`
-          }
-        });
-        console.log("✅ Notifikasi otomatis terkirim via API");
+          },
+          body: JSON.stringify(notificationPayload)
+        })
+        .then(response => response.json())
+        .then(data => console.log("✅ OneSignal Response:", data))
+        .catch(err => console.error("❌ OneSignal Fetch Error:", err));
+
       } catch (notifError) {
         console.error("❌ Gagal kirim notifikasi otomatis:", notifError);
       }
