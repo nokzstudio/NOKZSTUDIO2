@@ -29,10 +29,6 @@ import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
 import gsap from 'gsap';
 import Swal from 'sweetalert2';
 
-// === Capacitor Camera ===
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { Capacitor } from '@capacitor/core';
-
 export default function OrderPage() {
   const { type } = useParams();
   const navigate = useNavigate();
@@ -53,9 +49,6 @@ export default function OrderPage() {
       year: 'numeric',
     }),
   });
-
-  const [referenceImage, setReferenceImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   // =========================
   // FETCH BANNER
@@ -98,68 +91,6 @@ export default function OrderPage() {
   }, []);
 
   // =========================
-  // HANDLE IMAGE - Capacitor Camera
-  // =========================
-const handleTakeOrPickImage = async () => {
-  try {
-    // Kalau WEB/localhost
-    if (Capacitor.getPlatform() === 'web') {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-
-      input.onchange = (e: any) => {
-        const file = e.target.files[0];
-
-        if (!file) return;
-
-        setReferenceImage(file);
-
-        const previewUrl = URL.createObjectURL(file);
-        setImagePreview(previewUrl);
-      };
-
-      input.click();
-      return;
-    }
-
-    // Kalau Android APK
-    const photo = await Camera.getPhoto({
-      quality: 85,
-      allowEditing: true,
-      resultType: CameraResultType.Uri,
-      source: CameraSource.Prompt,
-      width: 1200,
-      height: 1200,
-      correctOrientation: true,
-    });
-
-    setImagePreview(photo.webPath!);
-
-    const response = await fetch(photo.webPath!);
-    const blob = await response.blob();
-
-    const file = new File(
-      [blob],
-      `reference_${Date.now()}.jpg`,
-      {
-        type: blob.type || 'image/jpeg',
-      }
-    );
-
-    setReferenceImage(file);
-
-  } catch (error: any) {
-    console.error(error);
-
-    Swal.fire(
-      'Error',
-      'Gagal mengambil gambar',
-      'error'
-    );
-  }
-};
-  // =========================
   // HANDLE SUBMIT
   // =========================
   const handleSubmit = async (e: React.FormEvent) => {
@@ -197,33 +128,6 @@ const handleTakeOrPickImage = async () => {
         return;
       }
 
-      // UPLOAD GAMBAR
-      let imageUrl = '';
-      if (referenceImage) {
-        try {
-          const formDataCloud = new FormData();
-          formDataCloud.append('file', referenceImage);
-          formDataCloud.append('upload_preset', 'nokz_unsigned');
-
-          const res = await fetch(
-            'https://api.cloudinary.com/v1_1/dylfsj7g2/image/upload',
-            { method: 'POST', body: formDataCloud }
-          );
-
-          const data = await res.json();
-
-          if (!res.ok) throw new Error(data.error?.message || 'Upload gagal');
-          
-          imageUrl = data.secure_url;
-          console.log('✅ Upload Cloudinary berhasil:', imageUrl);
-        } catch (uploadError: any) {
-          console.error('Upload Error:', uploadError);
-          Swal.fire('Upload Gagal', uploadError.message || 'Cek koneksi internet', 'error');
-          setLoading(false);
-          return;
-        }
-      }
-
       // SAVE TO FIREBASE
       const orderData = {
         clientName: formData.name,
@@ -231,7 +135,6 @@ const handleTakeOrPickImage = async () => {
         service: type,
         brief: formData.brief,
         date: formData.date,
-        referenceImage: imageUrl,
         deviceId,
         status: 'Belum Dimulai',
         paymentStatus: 'Belum Bayar',
@@ -248,7 +151,7 @@ const handleTakeOrPickImage = async () => {
       });
 
       // WhatsApp
-      const message = `Halo Nokz Studio! Saya ingin memesan jasa ${type?.toUpperCase()}%0A%0A*Nama:* ${formData.name}%0A*Tanggal:* ${formData.date}%0A*Brief:* ${formData.brief}${imageUrl ? `%0A*Referensi:* ${imageUrl}` : ''}`;
+      const message = `Halo Nokz Studio! Saya ingin memesan jasa ${type?.toUpperCase()}%0A%0A*Nama:* ${formData.name}%0A*Tanggal:* ${formData.date}%0A*Brief:* ${formData.brief}`;
       window.open(`https://wa.me/6287853895560?text=${message}`, '_blank');
 
       navigate('/');
@@ -393,35 +296,6 @@ const handleTakeOrPickImage = async () => {
     required
   />
 </div>
-          {/* IMAGE UPLOAD - Bagian yang baru */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 text-primary">
-              <ImageIcon size={18} />
-              <label className="text-xs font-black uppercase tracking-[0.2em]">Referensi Gambar</label>
-            </div>
-
-            <div
-              onClick={handleTakeOrPickImage}
-              className="w-full aspect-video bg-white/5 border border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-white/10 transition-all overflow-hidden"
-            >
-              {imagePreview ? (
-                <img 
-                  src={imagePreview} 
-                  alt="Preview" 
-                  className="w-full h-full object-cover" 
-                />
-              ) : (
-                <>
-                  <Upload size={32} className="text-white/20 mb-2" />
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-white/40">
-                    Pilih Foto / Ambil Foto
-                  </span>
-                  <span className="text-[9px] text-white/30 mt-1">Maksimal 5MB</span>
-                </>
-              )}
-            </div>
-          </div>
-
           {/* SUBMIT BUTTON */}
           <button
             type="submit"
