@@ -174,7 +174,9 @@ useEffect(() => {
 
           // 2. Kirim Notifikasi ke Status Bar via OneSignal API
           const ONESIGNAL_APP_ID = "f82bd795-4f0e-4adc-93d9-e8067943a8e8";
-          const ONESIGNAL_REST_API_KEY = "tfe7wupbmebevcgztrobnhz7s";
+          const ONESIGNAL_REST_API_KEY = "os_v2_app_7av5pfkpbzfnze6z5adhsq5i5bzhgqeduibevrfkb3b2xlkjh6hnbdxnmxi5jc24is4m5lvu4xas3e7jeyvshq4qalfdfj5hujif46a";
+
+          console.log("📤 Mencoba mengirim push notification...");
 
           fetch("https://onesignal.com/api/v1/notifications", {
             method: "POST",
@@ -188,9 +190,13 @@ useEffect(() => {
               headings: { id: "🛒 ADA PESANAN BARU!", en: "New Order!" },
               contents: { id: `Order dari ${order.clientName || "Customer"} (${order.service?.toUpperCase()})`, en: "Check admin panel" },
               priority: 10,
+              android_visibility: 1, // Agar muncul di status bar
               data: { screen: "admin" }
             })
-          }).catch(e => console.log("Notif send error:", e));
+          })
+          .then(res => res.json())
+          .then(json => console.log("✅ Berhasil kirim ke OneSignal:", json))
+          .catch(e => console.error("❌ Gagal kirim OneSignal:", e));
         }
       });
     });
