@@ -6,7 +6,7 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useEffect } from 'react';
 import OneSignal from '@onesignal/capacitor-plugin';
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { HashRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -153,7 +153,7 @@ useEffect(() => {
 
   return (
     <ErrorBoundary>
-      <BrowserRouter>
+      <HashRouter>
         <div className="relative min-h-screen selection:bg-primary/30">
           <ScrollToTop />
           <AnimatePresence mode="wait">
@@ -164,7 +164,7 @@ useEffect(() => {
             </Routes>
           </AnimatePresence>
         </div>
-      </BrowserRouter>
+      </HashRouter>
     </ErrorBoundary>
   );
 }
