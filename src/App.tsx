@@ -129,6 +129,9 @@ useEffect(() => {
     console.log("🚀 Inisialisasi OneSignal...");
     OneSignal.initialize("f82bd795-4f0e-4adc-93d9-e8067943a8e8");
 
+    // Daftarkan perangkat ini sebagai admin agar bisa menerima notifikasi pesanan
+    OneSignal.login("admin_nokz");
+
     OneSignal.Notifications.requestPermission(true)
       .then((accepted: boolean) => {
         console.log("✅ Izin notifikasi:", accepted ? "Diterima" : "Ditolak");

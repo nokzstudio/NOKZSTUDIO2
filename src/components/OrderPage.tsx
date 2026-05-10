@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
   ArrowLeft,
   Send,
@@ -159,6 +160,37 @@ export default function OrderPage() {
       };
 
       await addDoc(collection(db, 'orders'), orderData);
+
+      // --- KIRIM NOTIFIKASI ONESIGNAL LANGSUNG DARI WEB/APP ---
+      try {
+        const ONESIGNAL_APP_ID = "f82bd795-4f0e-4adc-93d9-e8067943a8e8";
+        const ONESIGNAL_REST_API_KEY = "tfe7wupbmebevcgztrobnhz7s";
+
+        await axios.post("https://onesignal.com/api/v1/notifications", {
+          app_id: ONESIGNAL_APP_ID,
+          included_segments: ["All Subscribed Users"], // Kirim ke semua (termasuk admin)
+          headings: {
+            en: "🛒 Order Baru Masuk!",
+            id: "🛒 Order Baru Masuk!"
+          },
+          contents: {
+            en: `New Order from ${formData.name}`,
+            id: `Ada order baru dari ${formData.name} (${type?.toUpperCase()})`
+          },
+          data: {
+            screen: "admin"
+          }
+        }, {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Basic ${ONESIGNAL_REST_API_KEY}`
+          }
+        });
+        console.log("✅ Notifikasi otomatis terkirim via API");
+      } catch (notifError) {
+        console.error("❌ Gagal kirim notifikasi otomatis:", notifError);
+      }
+      // -------------------------------------------------------
 
       Swal.fire({
         title: 'Sukses!',

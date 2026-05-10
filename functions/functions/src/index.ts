@@ -5,7 +5,7 @@ import axios from "axios";
 admin.initializeApp();
 
 const ONESIGNAL_APP_ID = "f82bd795-4f0e-4adc-93d9-e8067943a8e8";
-const ONESIGNAL_REST_API_KEY = "tfe7wupbmebvcgztrobnhz7s";
+const ONESIGNAL_REST_API_KEY = "tfe7wupbmebevcgztrobnhz7s";
 
 export const sendOrderNotification = onDocumentCreated("orders/{orderId}", async (event) => {
   const order = event.data?.data();
