@@ -32,7 +32,7 @@ workflows:
           echo "android.injected.signing.key.alias=$CM_KEY_ALIAS" >> gradle.properties
           echo "android.injected.signing.key.password=$CM_KEY_PASSWORD" >> gradle.properties
           
-          ./gradlew assembleRelease --no-daemon
+          ./gradlew clean assembleRelease --no-daemon --no-build-cache
 
     artifacts:
       - android/app/build/outputs/apk/release/app-release.apk
