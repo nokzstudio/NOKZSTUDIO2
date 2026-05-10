@@ -7,11 +7,4 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  build: {
-    rollupOptions: {
-      external: [
-        '@onesignal/capacitor-plugin',
-      ],
-    },
-  },
 });
