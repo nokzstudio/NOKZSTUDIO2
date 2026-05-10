@@ -15,6 +15,8 @@ import Contact from './components/Contact';
 import CustomCursor from './components/CustomCursor';
 import LoadingScreen from './components/LoadingScreen';
 import { Capacitor } from '@capacitor/core';
+import { db } from './lib/firebase';
+import { collection, query, where, onSnapshot, orderBy, limit } from 'firebase/firestore';
 import Admin from './components/Admin';
 import Login from './components/Login';
 import OrderPage from './components/OrderPage';
@@ -147,8 +149,55 @@ useEffect(() => {
 
     OneSignal.Notifications.addEventListener('click', handleNotificationClick);
 
+    // ==========================================
+    // PENGECEKAN ORDER BARU UNTUK NOTIFIKASI LOKAL
+    // ==========================================
+    const q = query(
+      collection(db, 'orders'),
+      orderBy('createdAt', 'desc'),
+      limit(1)
+    );
+
+    let isInitialLoad = true;
+    const unsubscribeOrders = onSnapshot(q, (snapshot) => {
+      if (isInitialLoad) {
+        isInitialLoad = false;
+        return;
+      }
+
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "added") {
+          const order = change.doc.data();
+
+          // 1. Munculkan Alert di dalam aplikasi
+          alert("🛒 ADA ORDER BARU!\nDari: " + (order.clientName || "Customer"));
+
+          // 2. Kirim Notifikasi ke Status Bar via OneSignal API
+          const ONESIGNAL_APP_ID = "f82bd795-4f0e-4adc-93d9-e8067943a8e8";
+          const ONESIGNAL_REST_API_KEY = "tfe7wupbmebevcgztrobnhz7s";
+
+          fetch("https://onesignal.com/api/v1/notifications", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+              "Authorization": `Basic ${ONESIGNAL_REST_API_KEY}`
+            },
+            body: JSON.stringify({
+              app_id: ONESIGNAL_APP_ID,
+              included_segments: ["All Subscribed Users"],
+              headings: { id: "🛒 ADA PESANAN BARU!", en: "New Order!" },
+              contents: { id: `Order dari ${order.clientName || "Customer"} (${order.service?.toUpperCase()})`, en: "Check admin panel" },
+              priority: 10,
+              data: { screen: "admin" }
+            })
+          }).catch(e => console.log("Notif send error:", e));
+        }
+      });
+    });
+
     return () => {
       OneSignal.Notifications.removeEventListener('click', handleNotificationClick);
+      unsubscribeOrders();
     };
 
   } catch (err) {
@@ -164,11 +213,12 @@ useEffect(() => {
           <ScrollToTop />
           <AnimatePresence mode="wait">
             <Routes>
-              <Route path="/" element={<HomeContent />} />
+              {/* Di versi APK, kita jadikan halaman Admin sebagai halaman utama */}
+              <Route path="/" element={Capacitor.isNativePlatform() ? <AdminPage /> : <HomeContent />} />
               <Route path="/admin" element={<AdminPage />} />
+              <Route path="/home" element={<HomeContent />} />
               <Route path="/order/:type" element={<OrderPage />} />
-              {/* Tambahkan rute cadangan jika path tidak ditemukan */}
-              <Route path="*" element={<HomeContent />} />
+              <Route path="*" element={Capacitor.isNativePlatform() ? <AdminPage /> : <HomeContent />} />
             </Routes>
           </AnimatePresence>
         </div>
