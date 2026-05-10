@@ -13,6 +13,10 @@ workflows:
         script: |
           npm ci --prefer-offline
 
+      - name: Build Web Assets
+        script: |
+          npm run build          # ← Ini yang ditambahkan
+
       - name: Sync Capacitor
         script: |
           npx cap sync android
@@ -21,7 +25,7 @@ workflows:
         script: |
           cd android
           
-          # Inject signing information
+          # Inject signing
           echo "android.injected.signing.store.file=$CM_KEYSTORE" >> gradle.properties
           echo "android.injected.signing.store.password=$CM_KEYSTORE_PASSWORD" >> gradle.properties
           echo "android.injected.signing.key.alias=$CM_KEY_ALIAS" >> gradle.properties
@@ -31,8 +35,3 @@ workflows:
 
     artifacts:
       - android/app/build/outputs/apk/release/app-release.apk
-
-    publishing:
-      email:
-        recipients:
-          - nokzdesign@gmail.com
