@@ -1,28 +1,58 @@
 import { motion } from 'motion/react';
 import { Home, ShoppingBag, Folder, MessageCircle, Sun, Moon } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { useTheme } from '../context/ThemeContext';
 import { trackOrderClick } from '../services/analyticsService';
 
 const navLinks = [
-  { name: 'Home', href: '#home', icon: Home },
-  { name: 'Order', href: '#about', icon: ShoppingBag },
-  { name: 'Porto', href: '#portfolio', icon: Folder },
-  { name: 'Contact', href: '#contact', icon: MessageCircle },
+  { name: 'Home', href: 'home', icon: Home },
+  { name: 'Order', href: 'about', icon: ShoppingBag },
+  { name: 'Porto', href: 'portfolio', icon: Folder },
+  { name: 'Contact', href: 'contact', icon: MessageCircle },
 ];
 
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
-  const [activeSegment, setActiveSegment] = useState('#home');
+  const [activeSegment, setActiveSegment] = useState('home');
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleNavClick = (e: React.MouseEvent, href: string) => {
+    e.preventDefault();
+    if (location.pathname !== '/') {
+      navigate('/?scroll=' + href);
+    } else {
+      const element = document.getElementById(href);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+        setActiveSegment(href);
+      }
+    }
+  };
+
+  useEffect(() => {
+    // Handle scroll if redirected from other page
+    if (location.pathname === '/') {
+      const params = new URLSearchParams(location.search);
+      const scrollTo = params.get('scroll');
+      if (scrollTo) {
+        setTimeout(() => {
+          const element = document.getElementById(scrollTo);
+          if (element) element.scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+      }
+    }
+  }, [location]);
 
   useEffect(() => {
     const handleScroll = () => {
+      if (location.pathname !== '/') return;
       setScrolled(window.scrollY > 50);
       
-      // Update active segment based on scroll
-      const sections = navLinks.map(link => link.href.substring(1));
+      const sections = navLinks.map(link => link.href);
       const scrollPos = window.scrollY + 100;
       
       for (const section of sections) {
@@ -30,14 +60,14 @@ export default function Navbar() {
         if (element) {
           const { offsetTop, offsetHeight } = element;
           if (scrollPos >= offsetTop && scrollPos < offsetTop + offsetHeight) {
-            setActiveSegment(`#${section}`);
+            setActiveSegment(section);
           }
         }
       }
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [location.pathname]);
 
   return (
     <>
@@ -49,7 +79,11 @@ export default function Navbar() {
         )}
       >
         <div className="max-w-xl mx-auto flex items-center justify-between">
-          <a href="#home" className="font-display font-black text-xl tracking-tighter transition-colors">
+          <a
+            href="#home"
+            onClick={(e) => handleNavClick(e, 'home')}
+            className="font-display font-black text-xl tracking-tighter transition-colors"
+          >
             NOKZ<span className="text-primary">.</span>STUDIO
           </a>
           
@@ -81,7 +115,8 @@ export default function Navbar() {
             return (
               <a
                 key={link.name}
-                href={link.href}
+                href={`#${link.href}`}
+                onClick={(e) => handleNavClick(e, link.href)}
                 className={cn(
                   "relative flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all duration-300 gap-1",
                   isActive ? "text-primary bg-primary/10" : "text-base-content/30 hover:text-base-content/60"
