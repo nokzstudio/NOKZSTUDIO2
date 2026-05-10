@@ -6,8 +6,6 @@ import { ThemeProvider } from './context/ThemeContext.tsx';
 import './index.css';
 
 // ================== ONE SIGNAL SETUP ==================
-import OneSignal from '@onesignal/capacitor-plugin';
-
 const initializeOneSignal = async () => {
   // Jangan jalankan di web/localhost
   if (Capacitor.getPlatform() === 'web') {
@@ -16,6 +14,9 @@ const initializeOneSignal = async () => {
   }
 
   try {
+    // Import dinamis khusus native platform
+    const { OneSignal } = await import('@onesignal/capacitor-plugin');
+
     await OneSignal.initialize(
       "f82bd795-4f0e-4adc-93d9-e8067943a8e8"
     );
