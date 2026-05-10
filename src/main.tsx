@@ -6,30 +6,21 @@ import { ThemeProvider } from './context/ThemeContext.tsx';
 import './index.css';
 
 // ================== ONE SIGNAL SETUP ==================
+// DICOMENT SEMENTARA - AKTIFKAN LAGI SETELAH BUILD WEB SUKSES
+/*
 const initializeOneSignal = async () => {
-  // Jangan jalankan di web/localhost
   if (Capacitor.getPlatform() === 'web') {
     console.log("⚠️ OneSignal dilewati di web");
     return;
   }
 
   try {
-    // Import dinamis khusus native platform
     const { OneSignal } = await import('@onesignal/capacitor-plugin');
-
-    await OneSignal.initialize(
-      "f82bd795-4f0e-4adc-93d9-e8067943a8e8"
-    );
-
+    await OneSignal.initialize("f82bd795-4f0e-4adc-93d9-e8067943a8e8");
     OneSignal.Debug.setLogLevel(6);
-
-    const hasPermission =
-      await OneSignal.Notifications.requestPermission(true);
-
+    const hasPermission = await OneSignal.Notifications.requestPermission(true);
     console.log("OneSignal Permission:", hasPermission);
-
     await OneSignal.login("admin_nokz");
-
     console.log("✅ OneSignal berhasil diinisialisasi");
   } catch (error) {
     console.error("❌ OneSignal error:", error);
@@ -37,6 +28,7 @@ const initializeOneSignal = async () => {
 };
 
 initializeOneSignal();
+*/
 // =====================================================
 
 createRoot(document.getElementById('root')!).render(
