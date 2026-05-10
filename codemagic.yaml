@@ -1,11 +1,11 @@
 workflows:
   android-release:
-    name: Android Release APK (Signed)
+    name: Android Release Signed
     instance_type: mac_mini_m2
     max_build_duration: 60
     environment:
       groups:
-        - keystore_credentials   # ← Nanti kita setup ini
+        - keystore_credentials
       vars:
         JAVA_VERSION: "17"
     scripts:
@@ -13,13 +13,20 @@ workflows:
         script: |
           npm ci --prefer-offline
 
-      - name: Sync Capacitor Android
+      - name: Sync Capacitor
         script: |
           npx cap sync android
 
       - name: Build Signed Release APK
         script: |
           cd android
+          
+          # Inject signing information
+          echo "android.injected.signing.store.file=$CM_KEYSTORE" >> gradle.properties
+          echo "android.injected.signing.store.password=$CM_KEYSTORE_PASSWORD" >> gradle.properties
+          echo "android.injected.signing.key.alias=$CM_KEY_ALIAS" >> gradle.properties
+          echo "android.injected.signing.key.password=$CM_KEY_PASSWORD" >> gradle.properties
+          
           ./gradlew assembleRelease --no-daemon
 
     artifacts:
@@ -28,4 +35,4 @@ workflows:
     publishing:
       email:
         recipients:
-          - your-email@example.com
+          - nokzdesign@gmail.com
