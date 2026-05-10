@@ -9,7 +9,7 @@ const config: CapacitorConfig = {
   },
   plugins: {
     OneSignal: {
-      googleProjectNumber: "REMOTE",
+      googleProjectNumber: "574951706903",
     }
   }
 };

@@ -116,14 +116,17 @@ useEffect(() => {
   // ONESIGNAL INITIALIZATION
   // =========================
  useEffect(() => {
+  const platform = Capacitor.getPlatform();
+  console.log("Current Platform:", platform);
 
-  // 🚨 hanya jalan di APK (Android/iOS)
-  if (!Capacitor.isNativePlatform()) {
-    console.log("⚠️ OneSignal dilewati di web");
+  // Jika platform bukan android atau ios, berarti di web
+  if (platform === 'web') {
+    console.log("⚠️ OneSignal dilewati di browser/web");
     return;
   }
 
   try {
+    console.log("🚀 Inisialisasi OneSignal...");
     OneSignal.initialize("f82bd795-4f0e-4adc-93d9-e8067943a8e8");
 
     OneSignal.Notifications.requestPermission(true)
