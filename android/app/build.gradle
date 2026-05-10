@@ -17,6 +17,12 @@ android {
         }
     }
 
+    // ✅ FIX penting: biar gak error "invalid source release"
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -45,11 +51,12 @@ dependencies {
 
 apply from: 'capacitor.build.gradle'
 
+// Google services optional
 try {
     def servicesJSON = file('google-services.json')
     if (servicesJSON.text) {
         apply plugin: 'com.google.gms.google-services'
     }
 } catch(Exception e) {
-    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+    logger.info("google-services.json not found, google-services plugin not applied.")
 }
