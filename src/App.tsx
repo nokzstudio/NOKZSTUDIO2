@@ -161,6 +161,8 @@ useEffect(() => {
               <Route path="/" element={<HomeContent />} />
               <Route path="/admin" element={<AdminPage />} />
               <Route path="/order/:type" element={<OrderPage />} />
+              {/* Tambahkan rute cadangan jika path tidak ditemukan */}
+              <Route path="*" element={<HomeContent />} />
             </Routes>
           </AnimatePresence>
         </div>
