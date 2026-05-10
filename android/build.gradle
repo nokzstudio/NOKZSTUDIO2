@@ -10,8 +10,8 @@ buildscript {
         classpath 'com.android.tools.build:gradle:8.10.1'
         classpath 'com.google.gms:google-services:4.4.4'
         
-        // Kotlin plugin fixed for OneSignal capacitor plugin compatibility
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.20'
+        // Kotlin plugin fixed for Capacitor and OneSignal plugin compatibility
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.20'
     }
 }
 
@@ -64,5 +64,5 @@ task clean(type: Delete) {
 
 // Tambahkan konfigurasi Kotlin di sini (paling bawah)
 ext {
-    kotlin_version = '1.9.20'
+    kotlin_version = '2.2.20'
 }
