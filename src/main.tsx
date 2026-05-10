@@ -6,8 +6,6 @@ import { ThemeProvider } from './context/ThemeContext.tsx';
 import './index.css';
 
 // ================== ONE SIGNAL SETUP ==================
-// DICOMENT SEMENTARA - AKTIFKAN LAGI SETELAH BUILD WEB SUKSES
-/*
 const initializeOneSignal = async () => {
   if (Capacitor.getPlatform() === 'web') {
     console.log("⚠️ OneSignal dilewati di web");
@@ -28,7 +26,6 @@ const initializeOneSignal = async () => {
 };
 
 initializeOneSignal();
-*/
 // =====================================================
 
 createRoot(document.getElementById('root')!).render(
