@@ -168,7 +168,9 @@ export default function OrderPage() {
 
         await axios.post("https://onesignal.com/api/v1/notifications", {
           app_id: ONESIGNAL_APP_ID,
-          included_segments: ["All Subscribed Users"], // Kirim ke semua (termasuk admin)
+          included_segments: ["All Subscribed Users"],
+          android_accent_color: "FF0000FF", // Warna biru untuk ikon
+          priority: 10, // High Priority agar muncul di status bar
           headings: {
             en: "🛒 Order Baru Masuk!",
             id: "🛒 Order Baru Masuk!"
